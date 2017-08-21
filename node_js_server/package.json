@@ -1,0 +1,65 @@
+{
+  "name": "nodejs-getting-started",
+  "version": "1.0.0",
+  "description": "End to end sample for running Node.js applications on Google Cloud Platform",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GoogleCloudPlatform/nodejs-getting-started.git"
+  },
+  "private": true,
+  "scripts": {
+    "start": "node app.js",
+    "e2e": "rm -rf node_modules/ &&  samples test build --deploy --timeout 20m --builderProject $GCLOUD_PROJECT",
+    "test": "samples test app",
+    "cover": "nyc --cache npm test; nyc report --reporter=html"
+  },
+  "author": "Google Inc.",
+  "contributors": [
+    "Jon Wayne Parrott <jonwayne@google.com>",
+    "Jonathan Simon <jbsimon@google.com>",
+    "Jason Dobry <jdobry@google.com>",
+    "Ace Nassri <anassri@google.com>"
+  ],
+  "cloud-repo-tools": {
+    "requiresKeyFile": true,
+    "requiresProjectId": true,
+    "test": {
+      "app": {
+        "args": [
+          "app.js"
+        ],
+        "msg": "Hello, world!"
+      }
+    }
+  },
+  "license": "Apache-2.0",
+  "semistandard": {
+    "globals": [
+      "after",
+      "afterEach",
+      "before",
+      "beforeEach",
+      "describe",
+      "it"
+    ]
+  },
+  "dependencies": {
+    "express": "~4.15.2",
+    "request": "^2.81.0"
+  },
+  "devDependencies": {
+    "@google-cloud/nodejs-repo-tools": "1.4.16",
+    "ava": "~0.21.0",
+    "supertest": "~3.0.0",
+    "tap-dot": "~1.0.5"
+  },
+  "engines": {
+    "node": ">=4.3.2"
+  },
+  "bugs": {
+    "url": "https://github.com/GoogleCloudPlatform/nodejs-getting-started/issues"
+  },
+  "homepage": "https://github.com/GoogleCloudPlatform/nodejs-getting-started#readme",
+  "main": "app.js",
+  "keywords": []
+}
