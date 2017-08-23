@@ -28,7 +28,7 @@ firebase.initializeApp({
   databaseURL: "https://talk2me-176916.firebaseio.com/"
 });
 
-//[START basic firebase chat]
+//[START basic firebase Messaging handeling]
 var ref = firebase.database().ref();
 
 function listenForNotificationRequests() {
@@ -78,12 +78,40 @@ function sendNotificationToUser(username, message, onSuccess) {
 listenForNotificationRequests();
 //[END basic firebase chat]
 
+// [START hello_world and send notification on web hit]
 
-// [START hello_world]
+var FCM = require('fcm-node');
+var fcm = new FCM(API_KEY);
+
+var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera) 
+	to: 'com.google.android.gms.tasks.zzh@4e44c4d',
+        //collapse_key: 'your_collapse_key',
+        
+        notification: {
+            title: 'Title of Thing', 
+            body: 'Body of your push Thing' 
+        },
+        
+        //data: {  //you can send only notification or only data(or include both) 
+        //    my_key: 'my value',
+        //    my_another_key: 'my another value'
+        //}
+    };
+
+
 // Say hello!
 console.log
 app.get('/', (req, res) => {
   res.status(200).send('Hello, world!');
+  console.log("web hit, sendnig message");
+  fcm.send(message, function(err, response){
+      if (err) {
+            console.log("Something has gone wrong!");
+      } else {
+            console.log("Successfully sent with response: ", response);
+      }
+    });
+  
 });
 // [END hello_world]
 
