@@ -45,7 +45,7 @@ function listenForNotificationRequests() {
     messageRecieved(request, function(){
         console.log('removed request from line');
         requestSnapshot.ref.remove();
-    }
+    })
   }, function(error) {
     console.error(error);
   });
@@ -83,6 +83,7 @@ app.get('/', (req, res) => {
   fcm.send(message, function(err, response){
       if (err) {
             console.log("Something has gone wrong!");
+            console.log(err);
       } else {
             console.log("Successfully sent with response: ", response);
       }
@@ -90,17 +91,16 @@ app.get('/', (req, res) => {
   
 });
 
-[START message handeling]
+//[START message handeling]
 
 function messageRecieved(message){
    var type = message.messageType
 
-   switch(type){
-	case('sign_in'):
+   switch (type){
+	case 'sign_in':
 	    handleSignIn(message)
 	break;
-   }
-	case('create_group'):
+	case 'create_group':
 	    handleCreateGroup(message)
 	break;
 	}
@@ -114,7 +114,7 @@ function handleSignIn(message){
 
 }
 
-[END message handeling]
+//[END message handeling]
 
 
 // [END hello_world]
