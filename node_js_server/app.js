@@ -43,7 +43,7 @@ function listenForNotificationRequests() {
     var request = requestSnapshot.val();
     console.log(request);
     messageRecieved(request, function(){
-	console.log('removed request from line');
+        console.log('removed request from line');
         requestSnapshot.ref.remove();
     }
   }, function(error) {
@@ -56,9 +56,8 @@ listenForNotificationRequests();
 //[END basic firebase chat]
 
 // [START hello_world and send notification on web hit]
-
-var FCM = require('fcm-node');
-var fcm = new FCM(API_KEY);
+var FCM_NODE = require('fcm-node');
+var fcm = new FCM_NODE(API_KEY);
 
 var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera) 
 	to: 'com.google.android.gms.tasks.zzh@4e44c4d',
@@ -98,15 +97,19 @@ function messageRecieved(message){
 
    switch(type){
 	case('sign_in'):
-	handleSignIn(message)
+	    handleSignIn(message)
 	break;
    }
+	case('create_group'):
+	    handleCreateGroup(message)
+	break;
+	}
 
 
 
 }
 
-function handleSignin(message){
+function handleSignIn(message){
 	users_token_dict['message.user_id'] = message.firebase_token
 
 }
