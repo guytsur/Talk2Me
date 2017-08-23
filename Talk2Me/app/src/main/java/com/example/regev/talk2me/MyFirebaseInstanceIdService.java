@@ -17,15 +17,19 @@ package com.example.regev.talk2me;
 
 import android.util.Log;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
 
 public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
-
+    public static final String MESSAGES_CHILD = "messages";
+    public static final String UPDATE_TOKEN = "update_token";
     private static final String TAG = "MyFirebaseIIDService";
     private static final String FRIENDLY_ENGAGE_TOPIC = "friendly_engage";
-
+    private DatabaseReference mFirebaseDatabaseReference ;
     /**
      * The Application's current Instance ID token is no longer valid
      * and thus a new one must be requested.
@@ -35,11 +39,18 @@ public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
         // If you need to handle the generation of a token, initially or
         // after a refresh this is where you should do that.
         String token = FirebaseInstanceId.getInstance().getToken();
-        Log.d(TAG, "FCM Token: " + token);
-
+        Log.d(TAG, "FCMPP Token: " + token);
+        updateServerToken(token);
         // Once a token is generated, we subscribe to topic.
-        FirebaseMessaging.getInstance()
-                .subscribeToTopic(FRIENDLY_ENGAGE_TOPIC);
-    }
+        //FirebaseMessaging.getInstance()
+        //        .subscribeToTopic(FRIENDLY_ENGAGE_TOPIC);
 
+    }
+    private void updateServerToken(String token)
+    {
+        FriendlyMessage message = new FriendlyMessage("USER_ID",UPDATE_TOKEN,token,"aaaa");
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mFirebaseDatabaseReference.child(MESSAGES_CHILD)
+                .push().setValue(message);
+    }
 }

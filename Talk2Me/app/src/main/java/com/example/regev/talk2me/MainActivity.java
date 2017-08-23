@@ -52,6 +52,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -90,7 +91,7 @@ public class MainActivity extends AppCompatActivity
     private SharedPreferences mSharedPreferences;
     private GoogleApiClient mGoogleApiClient;
     private static final String MESSAGE_URL = "http://talk2me.firebase.google.com/message/";
-
+    private String mUserId;
     private Button mSendButton;
     private Button mCreateButton;
     private Button mJoinButton;
@@ -106,7 +107,7 @@ public class MainActivity extends AppCompatActivity
     private DatabaseReference mFirebaseDatabaseReference;
     private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
             mFirebaseAdapter;
-
+    //private String mToken;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,7 +120,19 @@ public class MainActivity extends AppCompatActivity
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         mCreateButton = (Button) findViewById(R.id.btn_create_group);
         mJoinButton = (Button) findViewById(R.id.btn_join_group);
-
+        //mToken = FirebaseInstanceId.getInstance().getToken();
+        //Log.i(TAG, "FCM Registration Token: " + token);
+        if (mFirebaseUser != null) {
+            mUserId = mFirebaseUser.getToken(true).toString();
+            String token = FirebaseInstanceId.getInstance().getToken();
+            Log.i(TAG, "FCMP Registration Token: " + token);
+            //update server of your token
+            FriendlyMessage message = new FriendlyMessage("USER_ID",MyFirebaseInstanceIdService.UPDATE_TOKEN,mUserId,"aaaa");
+            mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+            //mFirebaseDatabaseReference.child(MESSAGES_CHILD)
+            //        .push().setValue(message);
+            mFirebaseDatabaseReference.push().setValue(message);
+        }
         if (mFirebaseUser == null) {
             // Not signed in, launch the Sign In activity
             startActivity(new Intent(this, SignInActivity.class));

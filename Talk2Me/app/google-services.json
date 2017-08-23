@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "915321298733-9m2777ffgiudtdn4q2rjpu8nidpg7j7m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.regev.talk2me",
+            "certificate_hash": "f01d25e2670b48bb00a85dabf6aa4641dc3545e8"
+          }
+        },
+        {
           "client_id": "915321298733-kb4d6romvja3ldf2cqutu3fhmudind9p.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -29,7 +37,7 @@
       ],
       "api_key": [
         {
-          "current_key": "AAAA1R1mny0:APA91bFtlF6Mzm4zE9OaM7hl2xjq0EJRd7n_DalscWeF8RK3dNX7bFWZD3KxYrbsROX-CH-RCLMnhnkIonHtsDRamkobu15fdeh0EjiF4XJtqJ7VJ6WfZtTQxx01FKko2N-PQH-Az9jO"
+          "current_key": "AIzaSyAPtoK87cYJoScO9CxAVzMMgcGuRgTZMKk"
         }
       ],
       "services": {
