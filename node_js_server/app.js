@@ -14,11 +14,11 @@
 'use strict';
 
 const express = require('express');
+//[INITIALIZE Firebase]
 var firebase = require("firebase-admin");
 var request = require('request');
 const app = express();
 
-//[INITIALIZE Firebase]
 var serviceAccount = require("/home/guytsur7/src/talk2me-176916/firebase_private_key.json")
 //Firebase Cloud Messaging Server API key
 var API_KEY = "AAAA1R1mny0:APA91bFtlF6Mzm4zE9OaM7hl2xjq0EJRd7n_DalscWeF8RK3dNX7bFWZD3KxYrbsROX-CH-RCLMnhnkIonHtsDRamkobu15fdeh0EjiF4XJtqJ7VJ6WfZtTQxx01FKko2N-PQH-Az9jO"
@@ -33,15 +33,17 @@ var ref = firebase.database().ref();
 
 function listenForNotificationRequests() {
   var requests = ref.child('notificationRequests');
-  requests.on('child_added', function(requestSnapshot) {
+  ref.on('value', function(requestSnapshot) {
     var request = requestSnapshot.val();
-    sendNotificationToUser(
-      request.username, 
-      request.message,
-      function() {
-        requestSnapshot.ref.remove();
-      }
-    );
+    console.log(request);
+    requestSnapshot.ref.remove();
+    //sendNotificationToUser(
+    //  request.name, 
+    //  request.text,
+    //  function() {
+    //    requestSnapshot.ref.remove();
+    //  }
+    //);
   }, function(error) {
     console.error(error);
   });
