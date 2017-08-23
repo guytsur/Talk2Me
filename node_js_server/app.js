@@ -14,6 +14,12 @@
 'use strict';
 
 const express = require('express');
+
+
+var users_token_dict = {}
+var groups_dict = {}
+
+
 //[INITIALIZE Firebase]
 var firebase = require("firebase-admin");
 var request = require('request');
@@ -36,43 +42,14 @@ function listenForNotificationRequests() {
   ref.on('value', function(requestSnapshot) {
     var request = requestSnapshot.val();
     console.log(request);
-    requestSnapshot.ref.remove();
-    //sendNotificationToUser(
-    //  request.name, 
-    //  request.text,
-    //  function() {
-    //    requestSnapshot.ref.remove();
-    //  }
-    //);
+    messageRecieved(request, function(){
+	console.log('removed request from line');
+        requestSnapshot.ref.remove();
+    }
   }, function(error) {
     console.error(error);
   });
 };
-
-function sendNotificationToUser(username, message, onSuccess) {
-  request({
-    url: 'https://fcm.googleapis.com/fcm/send',
-    method: 'POST',
-    headers: {
-      'Content-Type' :' application/json',
-      'Authorization': 'key='+API_KEY
-    },
-    body: JSON.stringify({
-      notification: {
-        title: message
-      },
-      to : '/topics/user_'+username
-    })
-  }, function(error, response, body) {
-    if (error) { console.error(error); }
-    else if (response.statusCode >= 400) { 
-      console.error('HTTP Error: '+response.statusCode+' - '+response.statusMessage); 
-    }
-    else {
-      onSuccess();
-    }
-  });
-}
 
 // start listening
 listenForNotificationRequests();
@@ -113,6 +90,30 @@ app.get('/', (req, res) => {
     });
   
 });
+
+[START message handeling]
+
+function messageRecieved(message){
+   var type = message.messageType
+
+   switch(type){
+	case('sign_in'):
+	handleSignIn(message)
+	break;
+   }
+
+
+
+}
+
+function handleSignin(message){
+	users_token_dict['message.user_id'] = message.firebase_token
+
+}
+
+[END message handeling]
+
+
 // [END hello_world]
 
 if (module === require.main) {
