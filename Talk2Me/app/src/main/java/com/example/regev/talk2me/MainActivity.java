@@ -55,6 +55,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.firebase.*;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -91,6 +92,8 @@ public class MainActivity extends AppCompatActivity
     private static final String MESSAGE_URL = "http://talk2me.firebase.google.com/message/";
 
     private Button mSendButton;
+    private Button mCreateButton;
+    private Button mJoinButton;
     private RecyclerView mMessageRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
     private ProgressBar mProgressBar;
@@ -103,6 +106,7 @@ public class MainActivity extends AppCompatActivity
     private DatabaseReference mFirebaseDatabaseReference;
     private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
             mFirebaseAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,6 +117,9 @@ public class MainActivity extends AppCompatActivity
         // Initialize Firebase Auth
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
+        mCreateButton = (Button) findViewById(R.id.btn_create_group);
+        mJoinButton = (Button) findViewById(R.id.btn_join_group);
+
         if (mFirebaseUser == null) {
             // Not signed in, launch the Sign In activity
             startActivity(new Intent(this, SignInActivity.class));
@@ -257,6 +264,7 @@ public class MainActivity extends AppCompatActivity
                         mFirebaseDatabaseReference.child(MESSAGES_CHILD)
                                 .push().setValue(friendlyMessage);
                         mMessageEditText.setText("");
+
                     }
                 });
             }
