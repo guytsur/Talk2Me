@@ -4,7 +4,7 @@ var users_token_dict = {}
 var groups_dict = {}
 var existingGroupPIN = {};
 
-var test_pin = ""
+var test_pin = undefined
 
 function handleMessage(message){
     console.log("Got message " + message.message_type)
@@ -17,6 +17,9 @@ function handleMessage(message){
         break;
     case 'join_group':
         messageHandler.join_group(message);
+        break; 
+    case 'leave_group':
+        messageHandler.leave_group(message);
         break; 
         
     default:
@@ -38,7 +41,6 @@ var messageHandler = {
     },
     
 'join_group': function handleJoingGroup(message){
-        console.log(message)
         if (groups_dict[message.group_pin] === undefined){
             sendGroupReqFailed(message.user_id, message.group_pin, 'group_full')
         }
@@ -54,13 +56,29 @@ var messageHandler = {
                 //for each (member in members){
                 members.forEach(function(member){
                     if (message.user_id != member){
-                        console.log("===========")
-                        console.log(member)
                         sendNewGroupMember(message.user_id, member)
                     }
                     })
                 }
     	    } 
+    },
+	
+	
+    
+'leave_group': function handleLeaveGroup(message){
+
+	members = groups_dict[message.group_pin].members
+	members.forEach(function(member){
+		if (message.user_id != member){
+			sendMemberLeftGroup(message.user_id, member)
+		}
+		})
+		index = members.indexOf(message.user_id)
+		members.splice(index, 1)
+		if (members.length <= 0){
+			delete groups_dict[message.group_pin]
+			delete existingGroupPIN[message.group_pin]
+	}
     },
 }
 
@@ -74,10 +92,25 @@ function addGroupToDict(message, callback){
           	found = true
         }
     }
-    test_pin = group_pin
+    if (test_pin ===undefined){
+         test_pin = group_pin
+    }
+   
 	groups_dict[group_pin] = {group_name:message.group_name, group_pin:group_pin, members:[message.user_id]}
 	callback(message.user_id, group_pin)
 }
+
+function sendMemberLeftGroup(leaving_user_id, remaining_user_id){
+    var message = { 
+        message_type: 'member_left_group',
+        data: {  
+            group_pin: group_pin,
+            new_member:leaving_user_id
+        }
+    }
+	sendMessageTo(message, remaining_user_id)
+}
+
 
 function sendNewGroupMember(new_member_user_id, old_member_user_id){
     var message = { 
@@ -87,8 +120,6 @@ function sendNewGroupMember(new_member_user_id, old_member_user_id){
             new_member:new_member_user_id
         }
     }
-                        console.log("<===========>")
-                        console.log(old_member_user_id)
 	sendMessageTo(message, old_member_user_id)
 }
 
@@ -138,7 +169,6 @@ function sendGroupFound(user_id, group){
 function sendMessageTo(message, user_id){
     message.to = users_token_dict[user_id]
     console.log("-------DEBUG: will be sending message: " + message.message_type + " to:" + user_id +" ---------")
-    console.log(users_token_dict)
     console.log(message)
 }
 
@@ -157,12 +187,19 @@ handleMessage(sign_in_message)
 
 sign_in_message = {
     message_type:"sign_in",
+    user_id:"tester",
+    firebase_token:"tester-TOKEN"
+}
+handleMessage(sign_in_message)
+
+sign_in_message = {
+    message_type:"sign_in",
     user_id:"joiner",
     firebase_token:"joiner-TOKEN"
 }
 
 handleMessage(sign_in_message)
-console.log("users_token_dict")
+console.log("users_token_dict (should have 2 users)")
 console.log(users_token_dict)
 
 console.log("----------------------check create_group ------------------------------")
@@ -180,6 +217,21 @@ console.log("group_dict (need to have one group)")
 console.log(groups_dict)
 console.log(existingGroupPIN)
 
+create_group_message = {
+    message_type:"create_group",
+    user_id:"tester",
+    group_name:"TESTER-GROUP"
+    
+}
+handleMessage(create_group_message)
+
+console.log("  ===> group_dict (need to have 2 groups)")
+console.log(groups_dict)
+console.log(existingGroupPIN)
+
+
+
+
 
 console.log("----------------------check join_group->wrong_pin ------------------------------")
 join_group_message_wrong_pin = {
@@ -190,8 +242,9 @@ join_group_message_wrong_pin = {
 }
 
 handleMessage(join_group_message_wrong_pin)
-console.log("group_dict - 1 group, 1 user")
+console.log("====> group_dict - 1 group, 1 user")
 console.log(groups_dict)
+
 console.log("----------------------check join_group->group_found ------------------------------")
 
 join_group_message = {
@@ -202,8 +255,32 @@ join_group_message = {
 }
 
 handleMessage(join_group_message)
-console.log("group_dict (need to have one group, 2 users)")
+console.log("====> group_dict (need to have one group, 2 users)")
 console.log(groups_dict)
 
+
+console.log("----------------------check leave_group->group still alive ------------------------------")
+
+join_group_message = {
+    message_type:"leave_group",
+    user_id:"builder",
+    group_pin:test_pin
+    
+}
+
+handleMessage(join_group_message)
+console.log("====>group_dict (need to have one group, 1 user - joiner)")
+console.log(groups_dict)
+
+join_group_message = {
+    message_type:"leave_group",
+    user_id:"joiner",
+    group_pin:test_pin
+    
+}
+
+handleMessage(join_group_message)
+console.log(" ====>group_dict (need to have zero groups beside tester group)")
+console.log(groups_dict)
 
 
