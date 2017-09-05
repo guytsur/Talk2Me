@@ -47,9 +47,9 @@ function listenForNotificationRequests() {
   var requests = ref.child('notificationRequests');
   ref.on('value', function(requestSnapshot) {
     var request = requestSnapshot.val();
-    console.log(request);
+    //console.log(request);
     messageRecieved(request, function(){
-        console.log('removed request from line');
+        //console.log('removed request from line');
         requestSnapshot.ref.remove();
     })
   }, function(error) {
@@ -67,42 +67,6 @@ function messageRecieved(message, callback){
 listenForNotificationRequests();
 //[END basic firebase chat]
 
-// [START hello_world and send notification on web hit]
-var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera) 
-	to: 'com.google.android.gms.tasks.zzh@4e44c4d',
-        //collapse_key: 'your_collapse_key',
-        
-        notification: {
-            title: 'Title of Thing', 
-            body: 'Body of your push Thing' 
-        },
-        
-        //data: {  //you can send only notification or only data(or include both) 
-        //    my_key: 'my value',
-        //    my_another_key: 'my another value'
-        //}
-    };
-
-
-// Say hello!
-console.log
-app.get('/', (req, res) => {
-  res.status(200).send('Hello, world!');
-  console.log("web hit, sendnig message");
-  fcm.send(message, function(err, response){
-      if (err) {
-            console.log("Something has gone wrong!");
-            console.log(err);
-      } else {
-            console.log("Successfully sent with response: ", response);
-      }
-    });
-  
-});
-
-//[START message handeling]
-
-
 var users_token_dict = {}
 var groups_dict = {}
 var existingGroupPIN = {};
@@ -111,7 +75,8 @@ var test_pin = undefined
 
 function handleMessage(message){
     if (message !== null){
-    console.log("Got message " + message.message_type)
+    console.log("Got message " + message[Object.keys(message)[0]].message_type)
+    message = message[Object.keys(message)[0]]
     switch(message.message_type){
         case 'create_group':
         messageHandler.create_group(message);
@@ -272,17 +237,11 @@ function sendGroupFound(user_id, group){
 
 
 function sendMessageTo(message, user_id){
-    message.to = users_token_dict[user_id]
-    console.log("-------DEBUG: will be sending message: " + message.message_type + " to:" + user_id +" ---------")
-    console.log(message)
-}
-
-function sendMessageTo(message, user_id){
 	message.to = users_token_dict[user_id]
 	fcm.send(message, function(err, response){
       if (err) {
             console.log("Something has gone wrong!");
-			console.log(message);
+            console.log(message);
             console.log(err);
       } else {
             console.log("Successfully sent with response: ", response);
@@ -300,10 +259,6 @@ if (module === require.main) {
     const port = server.address().port;
     console.log(`App listening on port ${port}`);
     console.log("shit got serious");
-	
-	message = {user_id : "a", group_name : "name"}
-	//handleCreateGroup(message)
-	
   });
   // [END server]
 }
