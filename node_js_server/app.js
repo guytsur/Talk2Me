@@ -57,12 +57,17 @@ function listenForNotificationRequests() {
   });
 };
 
+function messageRecieved(message, callback){
+	handleMessage(message)	
+	callback()
+}
+
+
 // start listening
 listenForNotificationRequests();
 //[END basic firebase chat]
 
 // [START hello_world and send notification on web hit]
-
 var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera) 
 	to: 'com.google.android.gms.tasks.zzh@4e44c4d',
         //collapse_key: 'your_collapse_key',
@@ -97,65 +102,178 @@ app.get('/', (req, res) => {
 
 //[START message handeling]
 
-function messageRecieved(message){
-   var type = message.messageType
+MAX_USER_PER_GROUP = 16
 
-   switch (type){
-	case 'sign_in':
-	    handleSignIn(message)
-	break;
-	case 'create_group':
-	    handleCreateGroup(message)
-	break;
-	}
+var users_token_dict = {}
+var groups_dict = {}
+var existingGroupPIN = {};
 
+var test_pin = undefined
 
-
+function handleMessage(message){
+    console.log("Got message " + message.message_type)
+    switch(message.message_type){
+        case 'create_group':
+        messageHandler.create_group(message);
+        break;
+    case 'sign_in':
+         messageHandler.sign_in(message);
+        break;
+    case 'join_group':
+        messageHandler.join_group(message);
+        break; 
+    case 'leave_group':
+        messageHandler.leave_group(message);
+        break; 
+        
+    default:
+        console.log("Unknown message type")
+        console.log(message)
+     ///
+    }
 }
 
-function handleSignIn(message){
-	users_token_dict['message.user_id'] = message.firebase_token
-
-}
-
-function handleCreateGroup(message){
-	generateUIDWithCollisionChecking(function(group_pin) {
-		addGroupToDict(group_pin, message, function(message, group_pin){
-				sendGroupCreated(message.user_id, group_pin)
-		})			
-	})
-}
+var messageHandler = {
+'create_group': function handleCreateGroup(message){
+    addGroupToDict(message,
+        sendGroupCreated)
+    
+    },
+    
+'sign_in': function handleSignIn(message){
+    	users_token_dict[message.user_id] = message.firebase_token
+    },
+    
+'join_group': function handleJoingGroup(message){
+        if (groups_dict[message.group_pin] === undefined){
+            sendGroupReqFailed(message.user_id, message.group_pin, 'group_full')
+        }
+        else{
+            members = groups_dict[message.group_pin].members
+    	
+        	if (members.length >= MAX_USER_PER_GROUP){
+    	        sendGroupReqFailed(message.user_id, message.group_pin, 'group_full')
+        	}
+        	else {
+                members.push(message.user_id)
+                sendGroupFound(message.user_id, groups_dict[message.group_pin])
+                //for each (member in members){
+                members.forEach(function(member){
+                    if (message.user_id != member){
+                        sendNewGroupMember(message.user_id, member)
+                    }
+                    })
+                }
+    	    } 
+    },
 	
+	
+    
+'leave_group': function handleLeaveGroup(message){
 
-//[END message handeling]
-function addGroupToDict(group_pin, message){
-	groups_dict[group_pin] = {group_name:message.group_name, group_pin:group_pin, members:{}}
+	members = groups_dict[message.group_pin].members
+	members.forEach(function(member){
+		if (message.user_id != member){
+			sendMemberLeftGroup(message.user_id, member)
+		}
+		})
+		index = members.indexOf(message.user_id)
+		members.splice(index, 1)
+		if (members.length <= 0){
+			delete groups_dict[message.group_pin]
+			delete existingGroupPIN[message.group_pin]
+	}
+    },
 }
 
-function generateUIDWithCollisionChecking(group_pin) {
-    while (true) {
+function addGroupToDict(message, callback){
+    found = false
+    while (!found) {
         var uid = ("0000" + ((Math.random() * Math.pow(36, 4)) | 0).toString(36)).slice(-4);
         if (!existingGroupPIN.hasOwnProperty(uid)) {
             existingGroupPIN[uid] = true;
             group_pin = uid;
+          	found = true
         }
     }
+    if (test_pin ===undefined){
+         test_pin = group_pin
+    }
+   
+	groups_dict[group_pin] = {group_name:message.group_name, group_pin:group_pin, members:[message.user_id]}
+	callback(message.user_id, group_pin)
+}
+
+function sendMemberLeftGroup(leaving_user_id, remaining_user_id){
+    var message = { 
+        message_type: 'member_left_group',
+        data: {  
+            group_pin: group_pin,
+            new_member:leaving_user_id
+        }
+    }
+	sendMessageTo(message, remaining_user_id)
 }
 
 
-//[START Sending Messages]
-function sendGroupCreated(user_id, group_pin){
-	var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera) 
-	to: '',
+function sendNewGroupMember(new_member_user_id, old_member_user_id){
+    var message = { 
+        message_type: 'new_group_member',
+        data: {  
+            group_pin: group_pin,
+            new_member:new_member_user_id
+        }
+    }
+	sendMessageTo(message, old_member_user_id)
+}
 
-        data: {  //you can send only notification or only data(or include both) 
+
+
+function sendGroupCreated(user_id, group_pin){
+	var message = { 
+        message_type: 'group_created',
+        data: {  
             group_pin: group_pin,
 
         }
+    }
+	sendMessageTo(message, user_id)
+}
+
+function sendGroupReqFailed(user_id, group_pin, reason){
+	var message = { 
+        message_type: 'group_req_failed',
+        data: {  
+            group_pin: group_pin,
+            reason: reason,
+
+        }
     };
-	
-	//sendMessageTo(message, user_id)
-	console.log(groups_dict)
+    
+	sendMessageTo(message, user_id)
+
+}
+
+
+function sendGroupFound(user_id, group){
+	var message = { 
+        message_type: 'group_found',
+        data: {  
+            group_name: group.group_name,
+            group_members: group.members,
+
+        }
+    };
+    
+	sendMessageTo(message, user_id)
+
+}
+
+
+function sendMessageTo(message, user_id){
+    message.to = users_token_dict[user_id]
+    console.log("-------DEBUG: will be sending message: " + message.message_type + " to:" + user_id +" ---------")
+    console.log(message)
 }
 
 function sendMessageTo(message, user_id){
