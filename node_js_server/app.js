@@ -19,7 +19,7 @@ const express = require('express');
 var users_token_dict = {}
 var groups_dict = {}
 var existingGroupPIN = {};
-
+var MAX_USER_PER_GROUP = 16
 
 //[INITIALIZE Firebase]
 var firebase = require("firebase-admin");
@@ -102,7 +102,6 @@ app.get('/', (req, res) => {
 
 //[START message handeling]
 
-MAX_USER_PER_GROUP = 16
 
 var users_token_dict = {}
 var groups_dict = {}
@@ -111,6 +110,7 @@ var existingGroupPIN = {};
 var test_pin = undefined
 
 function handleMessage(message){
+    if (message !== null){
     console.log("Got message " + message.message_type)
     switch(message.message_type){
         case 'create_group':
@@ -130,6 +130,7 @@ function handleMessage(message){
         console.log("Unknown message type")
         console.log(message)
      ///
+    }
     }
 }
 
@@ -301,7 +302,7 @@ if (module === require.main) {
     console.log("shit got serious");
 	
 	message = {user_id : "a", group_name : "name"}
-	handleCreateGroup(message)
+	//handleCreateGroup(message)
 	
   });
   // [END server]
