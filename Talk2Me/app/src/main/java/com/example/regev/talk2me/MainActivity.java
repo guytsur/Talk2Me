@@ -68,20 +68,24 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener,GroupAdapterOnClickHandler {
+    private static final int GROUP_SCREEN = 1;
+    public static final int ACTION_LEAVE = 100;
+
     @Override
-    public void onClick(String groupName, String groupPhoto) {
+    public void onClick(Group group) {
         Context context = this;
-        Toast.makeText(context, groupName, Toast.LENGTH_SHORT)
-                .show();
+        //Toast.makeText(context, groupName, Toast.LENGTH_SHORT).show();
         //TODO Launch group viewing activity of the clicked group.
         //TODO bom
         // COMPLETED (3) Remove the Toast and launch the DetailActivity using an explicit Intent
         Class destinationClass = GroupScreen.class;
         Intent intentToStartDetailActivity = new Intent(mContext, destinationClass);
-        intentToStartDetailActivity.putExtra("groupName",groupName);
-        intentToStartDetailActivity.putExtra("groupPhoto",groupPhoto);
+        intentToStartDetailActivity.putExtra("group",group);
+        intentToStartDetailActivity.putExtra("username",mUsername);
+        //intentToStartDetailActivity.putExtra("groupName",groupName);
+        //intentToStartDetailActivity.putExtra("groupPhoto",groupPhoto);
         //TODO send the activity also all the groups members...
-        startActivity(intentToStartDetailActivity);
+        startActivityForResult(intentToStartDetailActivity,GROUP_SCREEN);
     }
 
     /**
@@ -89,7 +93,7 @@ public class MainActivity extends AppCompatActivity
      */
 
     public class GroupAdapter extends RecyclerView.Adapter<com.example.regev.talk2me.MainActivity.GroupAdapter.GroupAdapterViewHolder> {
-        private Vector<String[]> mGroups;
+        private Vector<Group> mGroups;
 
         // COMPLETED (3) Create a final private ForecastAdapterOnClickHandler called mClickHandler
     /*
@@ -114,6 +118,7 @@ public class MainActivity extends AppCompatActivity
          */
         public GroupAdapter(GroupAdapterOnClickHandler clickHandler) {
             mClickHandler = clickHandler;
+            mGroups = new Vector<Group>();
         }
 
         // COMPLETED (5) Implement OnClickListener in the ForecastAdapterViewHolder class
@@ -141,9 +146,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 int adapterPosition = getAdapterPosition();
-                String groupName = mGroups.get(adapterPosition)[0];
-                String groupPhoto = mGroups.get(adapterPosition)[1];
-                mClickHandler.onClick(groupName,groupPhoto);
+                //String groupName = mGroups.get(adapterPosition).getmName();
+                //String groupPhoto = mGroups.get(adapterPosition).getmPhotoURL();
+                mClickHandler.onClick(mGroups.get(adapterPosition));
             }
         }
 
@@ -181,14 +186,14 @@ public class MainActivity extends AppCompatActivity
          */
         @Override
         public void onBindViewHolder(com.example.regev.talk2me.MainActivity.GroupAdapter.GroupAdapterViewHolder GroupAdapterViewHolder, int position) {
-            String[] group = mGroups.get(position);
-            GroupAdapterViewHolder.groupTextView.setText(group[0]);
+            Group group = mGroups.get(position);
+            GroupAdapterViewHolder.groupTextView.setText(group.getmName());
             //GroupAdapterViewHolder.groupImageView.setImageURI(new URI(group[1]));
-            if (group[1] == null || group[1] == "") {
+            if (group.getmPhotoURL() == null || group.getmPhotoURL() == "") {
                 GroupAdapterViewHolder.groupImageView.setImageResource(R.drawable.ic_account_circle_black_36dp);
             } else {
                 Glide.with(MainActivity.this)
-                        .load(group[1])
+                        .load(group.getmPhotoURL())
                         .into(GroupAdapterViewHolder.groupImageView);
             }
         }
@@ -212,9 +217,38 @@ public class MainActivity extends AppCompatActivity
          *
          * @param groupData The new weather data to be displayed.
          */
-        public void setGroupData(Vector<String[]> groupData) {
+        public void setGroupData(Vector<Group> groupData) {
             mGroups = groupData;
             notifyDataSetChanged();
+        }
+        public void addGroup(Group toAdd)
+        {
+            for (int i = 0; i < mGroups.size(); i++) {
+                Group groupI = mGroups.get(i);
+                if (groupI.getmPIN().equals(toAdd.getmPIN()))
+                {
+                    Log.i(TAG, "we already have this group...");
+                    return; //we already have this group...
+                }
+            }
+            mGroups.add(toAdd);
+            Log.i(TAG, "group added...");
+            notifyDataSetChanged();
+        }
+        public void removeGroup(Group toRemove)
+        {
+            for (int i = 0; i < mGroups.size(); i++) {
+                Group groupI = mGroups.get(i);
+
+                if (groupI.getmPIN().equals(toRemove.getmPIN()))
+                {
+                    Log.i(TAG, "Found a group to remove");
+                    //TODO check if group really removed..
+                    mGroups.remove(i);
+                    notifyDataSetChanged();
+                    break;
+                }
+            }
         }
     }
 
@@ -335,11 +369,15 @@ public class MainActivity extends AppCompatActivity
         mGroupAdapter = new GroupAdapter(this);
         mGroupRecyclerView.setAdapter(mGroupAdapter);
         //add a group just to see it and debug...
-        Vector<String[]> groups = new Vector<String[]>();
-        String[] group = new String[2];
-        group[0] = "GRgr";
-        group[1] = null;
-        groups.add(0,group);
+        Vector<Group> groups = new Vector<Group>();
+        Group group = new Group("Ggrgr","342423",null);
+        group.addMember(new GroupMember("wasim",null,false));
+        group.addMember(new GroupMember("walid",null,false));
+        group.addMember(new GroupMember("wakff",null,false));
+        group.addMember(new GroupMember("wasi",null,false));
+        //group[0] = "GRgr";
+        //group[1] = null;
+        groups.add(group);
         mGroupAdapter.setGroupData(groups);
         //done adding
         mGroupRecyclerView.setLayoutManager(mLinearLayoutManager2);
@@ -468,8 +506,14 @@ public class MainActivity extends AppCompatActivity
 
                     }
                 });
-                //Also launch the group activity to check if it works...
-
+                //add a group just to see it and debug...
+                Vector<Group> groups = new Vector<Group>();
+                Group group = new Group("Ggrgr","342423",null);
+                //group[0] = "GRgr";
+                //group[1] = null;
+                groups.add(group);
+                //mGroupAdapter.setGroupData(groups);
+                mGroupAdapter.addGroup(group);
             }
         });
 
@@ -606,8 +650,25 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+        if (requestCode == GROUP_SCREEN)
+        {
+            if(resultCode == RESULT_OK)
+            {
 
-        if (requestCode == REQUEST_IMAGE) {
+                Bundle extras = data.getExtras();
+                Log.d(TAG, "GROUP WAS SUPPOSED TO BE REMOVEDDDDDDDDDDDD: " + (extras.getInt("action") == ACTION_LEAVE));
+                String action = extras.getString("action");
+                if(extras.getInt("action") == ACTION_LEAVE)
+                {
+                    //TODO delete group from list..
+                    Log.d(TAG, "GROUP WAS SUPPOSED TO BE REMOVEDDDDDDDDDDDD: " + extras.getString("action"));
+                    Group toDelete = (Group) extras.get("group");
+                    mGroupAdapter.removeGroup(toDelete);
+                    Log.d(TAG, "GROUP WAS SUPPOSED TO BE REMOVEDDDDDDDDDDDD");
+                }
+            }
+        }
+        else if (requestCode == REQUEST_IMAGE) {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
                     final Uri uri = data.getData();

@@ -5,5 +5,5 @@ package com.example.regev.talk2me;
  */
 
 public interface GroupAdapterOnClickHandler{
-        void onClick(String groupName,String groupPhoto);
+        void onClick(Group group);
 }
