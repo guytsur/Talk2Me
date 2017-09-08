@@ -1,19 +1,4 @@
 package com.example.regev.talk2me;
-/**
- * Copyright Google Inc. All Rights Reserved.
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -382,7 +367,7 @@ public class MainActivity extends AppCompatActivity
         //done adding
         mGroupRecyclerView.setLayoutManager(mLinearLayoutManager2);
         mGroupRecyclerView.setVisibility(View.VISIBLE);
-        mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
+        /*mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
 
         // New child entries
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
@@ -439,7 +424,7 @@ public class MainActivity extends AppCompatActivity
                     Glide.with(MainActivity.this)
                             .load(friendlyMessage.getPhotoUrl())
                             .into(viewHolder.messengerImageView);
-                }*/
+                }
 
             }
         };
@@ -499,7 +484,7 @@ public class MainActivity extends AppCompatActivity
                                 FriendlyMessage(mMessageEditText.getText().toString(),
                                 mUsername,
                                 mPhotoUrl,
-                                null /* no image */);
+                                null /* no image );
                         mFirebaseDatabaseReference.child(MESSAGES_CHILD)
                                 .push().setValue(friendlyMessage);
                         mMessageEditText.setText("");
@@ -507,6 +492,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
                 //add a group just to see it and debug...
+                //TODO remove since its test
                 Vector<Group> groups = new Vector<Group>();
                 Group group = new Group("Ggrgr","342423",null);
                 //group[0] = "GRgr";
@@ -526,7 +512,7 @@ public class MainActivity extends AppCompatActivity
                 intent.setType("image/*");
                 startActivityForResult(intent, REQUEST_IMAGE);
             }
-        });
+        });*/
 
         // set mButton on click listener
         mCreateButton.setOnClickListener(new View.OnClickListener() {
@@ -551,6 +537,18 @@ public class MainActivity extends AppCompatActivity
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog,
                                                         int id) {
+                                        //TODO add possibility to add a group photo to a group...
+                                        mAddMessageImageView = (ImageView) findViewById(R.id.addMessageImageView);
+                                        mAddMessageImageView.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                Log.d(TAG, "OMGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG");
+                                                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                                                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                                                intent.setType("image/*");
+                                                startActivityForResult(intent, REQUEST_IMAGE);
+                                            }
+                                        });
                                         // get user input and set it to etOutput
                                         // edit text
                                         //etOutput.setText(userInputMission.getText() + " Due "+userInputDate.getText());

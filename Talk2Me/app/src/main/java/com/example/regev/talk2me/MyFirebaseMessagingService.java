@@ -37,6 +37,60 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "FCM Message Id: " + remoteMessage.getMessageId());
         //Log.d(TAG, "FCM Notification Message: " + remoteMessage.getNotification());
         Log.d(TAG, "FCM Data Message: " + remoteMessage.getData().get("new_member"));
+        String messageType = remoteMessage.getData().get("message_type");
+
+        if(messageType.equals("group_created"))
+        {
+            //TODO create a group by this name with only me as a member
+            //Recieved params: group_pin, group_name
+        }
+        else if (messageType.equals("group_found"))
+        {
+            //TODO create a group by this name with the list of members given.
+            /*Parameters:
+            group_pin
+                    group_name
+            group_members	user_name
+                            picture_url
+                            user_state	Locked/Not Locked
+                            */
+        }
+        else if (messageType.equals("group_req_failed"))
+        {
+            //TODO popup a Toast saying group join failed due to non existant pin or full group
+            //Params: group_pin,reason	no_PIN  OR group_full
+        }
+        else if (messageType.equals("new_group_member"))
+        {
+            //TODO add a new group member to the designated group.
+            /*params:
+            group_pin
+            new_member	user_name
+                        picture_url
+                        */
+
+        }
+        else if (messageType.equals("member_left_group"))
+        {
+            //TODO Remove the designated member from the group.
+            //Parameters:group_PIN, left_member
+        }
+        else if (messageType.equals("lock_request_worked"))
+        {
+            //TODO mark the user as locked in the group..
+            //Parameters: user_id, group ID
+        }
+        else if (messageType.equals("lock_request_failed"))
+        {
+            //TODO popup a fail to lock toast
+            //Parameters: user_id
+        }
+        else if (messageType.equals("lock_device"))
+        {
+            //TODO Lock the device- pop up an alarm and notify the server that the device was locked.
+            //Parameters: group_pin
+        }
+
         //sendNotification(remoteMessage.getFrom() + ": " + remoteMessage.getNotification().getBody() );
         //Toast.makeText(this, "Guy tsur rocks", Toast.LENGTH_SHORT).show();
         //TODO Handle all recieved messages from the server, including Lock message which should pop up an alarm.
