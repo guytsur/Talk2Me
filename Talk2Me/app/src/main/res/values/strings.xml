@@ -16,4 +16,8 @@
     <string name="btn_dialog_text">Add</string>
     <string name="btn_create_group">Create Group</string>
     <string name="btn_join_group">Join Group</string>
+    <string name="btn_leave_group">Leave Group</string>
+    <string name="btn_invite_member">Invite</string>
+    <string name="btn_back">Back</string>
+    <string name="title_activity_group_screen">GroupScreen</string>
 </resources>

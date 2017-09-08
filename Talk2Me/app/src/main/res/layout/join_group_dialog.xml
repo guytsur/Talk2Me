@@ -15,7 +15,7 @@
         android:id="@+id/et_group_name_join_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Group name"
+        android:hint="Group PIN Number"
         >
         <requestFocus />
     </EditText>

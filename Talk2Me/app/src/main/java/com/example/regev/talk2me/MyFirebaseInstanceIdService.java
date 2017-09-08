@@ -17,19 +17,26 @@ package com.example.regev.talk2me;
 
 import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.RemoteMessage;
 
 public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
     public static final String MESSAGES_CHILD = "messages";
-    public static final String UPDATE_TOKEN = "update_token";
+    public static final String UPDATE_TOKEN = "token_update";
     private static final String TAG = "MyFirebaseIIDService";
     private static final String FRIENDLY_ENGAGE_TOPIC = "friendly_engage";
     private DatabaseReference mFirebaseDatabaseReference ;
+    private FirebaseAuth mFirebaseAuth;
+    private FirebaseUser mFirebaseUser;
+    String mUsername;
+    String mPhotoUrl;
     /**
      * The Application's current Instance ID token is no longer valid
      * and thus a new one must be requested.
@@ -40,7 +47,7 @@ public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
         // after a refresh this is where you should do that.
         String token = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "FCMPP Token: " + token);
-        updateServerToken(token);
+        updateServerToken(token);//TODO update this to the same token sending from mainactivity so it works
         // Once a token is generated, we subscribe to topic.
         //FirebaseMessaging.getInstance()
         //        .subscribeToTopic(FRIENDLY_ENGAGE_TOPIC);
@@ -48,9 +55,29 @@ public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
     }
     private void updateServerToken(String token)
     {
-        FriendlyMessage message = new FriendlyMessage("USER_ID",UPDATE_TOKEN,token,"aaaa");
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        mFirebaseDatabaseReference.child(MESSAGES_CHILD)
-                .push().setValue(message);
+        //token = FirebaseInstanceId.getInstance().getToken();
+        String type = UPDATE_TOKEN;
+        //String user_id = "Regev";
+        String firebase_token = token;
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mFirebaseUser = mFirebaseAuth.getCurrentUser();
+        if (mFirebaseUser != null) {
+            //mUserId = mFirebaseUser.getToken(true).toString();
+            //mUsername = mFirebaseUser.getEmail();
+            //mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
+            mUsername = mFirebaseUser.getEmail();
+            if (mFirebaseUser.getPhotoUrl() != null) {
+                mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
+            }
+
+            ClientToServerMessage msg = new ClientToServerMessage(type, mUsername, firebase_token, mPhotoUrl, "", "",
+                    null,
+                    null, "");
+            mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+            //mFirebaseDatabaseReference.child(MESSAGES_CHILD)
+            //        .push().setValue(message);
+            //mFirebaseDatabaseReference.push().setValue(message);
+            mFirebaseDatabaseReference.push().setValue(msg);
+        }
     }
 }

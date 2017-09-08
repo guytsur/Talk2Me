@@ -15,6 +15,9 @@ package com.example.regev.talk2me;
  * limitations under the License.
  */
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -29,14 +32,15 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,12 +60,163 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.google.firebase.*;
+
+import java.util.Dictionary;
+import java.util.Vector;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity
-        implements GoogleApiClient.OnConnectionFailedListener {
+        implements GoogleApiClient.OnConnectionFailedListener,GroupAdapterOnClickHandler {
+    @Override
+    public void onClick(String groupName, String groupPhoto) {
+        Context context = this;
+        Toast.makeText(context, groupName, Toast.LENGTH_SHORT)
+                .show();
+        //TODO Launch group viewing activity of the clicked group.
+        //TODO bom
+        // COMPLETED (3) Remove the Toast and launch the DetailActivity using an explicit Intent
+        Class destinationClass = GroupScreen.class;
+        Intent intentToStartDetailActivity = new Intent(mContext, destinationClass);
+        intentToStartDetailActivity.putExtra("groupName",groupName);
+        intentToStartDetailActivity.putExtra("groupPhoto",groupPhoto);
+        //TODO send the activity also all the groups members...
+        startActivity(intentToStartDetailActivity);
+    }
+
+    /**
+     * Created by Regev on 9/8/2017.
+     */
+
+    public class GroupAdapter extends RecyclerView.Adapter<com.example.regev.talk2me.MainActivity.GroupAdapter.GroupAdapterViewHolder> {
+        private Vector<String[]> mGroups;
+
+        // COMPLETED (3) Create a final private ForecastAdapterOnClickHandler called mClickHandler
+    /*
+     * An on-click handler that we've defined to make it easy for an Activity to interface with
+     * our RecyclerView
+     */
+        private final GroupAdapterOnClickHandler mClickHandler;
+
+        // COMPLETED (1) Add an interface called ForecastAdapterOnClickHandler
+        // COMPLETED (2) Within that interface, define a void method that access a String as a parameter
+        /**
+         * The interface that receives onClick messages.
+         */
+
+
+        // COMPLETED (4) Add a ForecastAdapterOnClickHandler as a parameter to the constructor and store it in mClickHandler
+        /**
+         * Creates a ForecastAdapter.
+         *
+         * @param clickHandler The on-click handler for this adapter. This single handler is called
+         *                     when an item is clicked.
+         */
+        public GroupAdapter(GroupAdapterOnClickHandler clickHandler) {
+            mClickHandler = clickHandler;
+        }
+
+        // COMPLETED (5) Implement OnClickListener in the ForecastAdapterViewHolder class
+        /**
+         * Cache of the children views for a forecast list item.
+         */
+        public class GroupAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+            //public final TextView mWeatherTextView;
+            TextView groupTextView;
+            ImageView groupImageView;
+
+            public GroupAdapterViewHolder(View v) {
+                super(v);
+                groupTextView = (TextView) itemView.findViewById(R.id.groupNameTextView);
+                groupImageView = (CircleImageView) itemView.findViewById(R.id.groupImageView);
+                v.setOnClickListener(this);
+            }
+
+            // COMPLETED (6) Override onClick, passing the clicked day's data to mClickHandler via its onClick method
+            /**
+             * This gets called by the child views during a click.
+             *
+             * @param v The View that was clicked
+             */
+            @Override
+            public void onClick(View v) {
+                int adapterPosition = getAdapterPosition();
+                String groupName = mGroups.get(adapterPosition)[0];
+                String groupPhoto = mGroups.get(adapterPosition)[1];
+                mClickHandler.onClick(groupName,groupPhoto);
+            }
+        }
+
+        /**
+         * This gets called when each new ViewHolder is created. This happens when the RecyclerView
+         * is laid out. Enough ViewHolders will be created to fill the screen and allow for scrolling.
+         *
+         * @param viewGroup The ViewGroup that these ViewHolders are contained within.
+         * @param viewType  If your RecyclerView has more than one type of item (which ours doesn't) you
+         *                  can use this viewType integer to provide a different layout. See
+         *                  {@link android.support.v7.widget.RecyclerView.Adapter#getItemViewType(int)}
+         *                  for more details.
+         * @return A new ForecastAdapterViewHolder that holds the View for each list item
+         */
+        @Override
+        public com.example.regev.talk2me.MainActivity.GroupAdapter.GroupAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+            Context context = viewGroup.getContext();
+            int layoutIdForListItem = R.layout.group_item_view;
+            LayoutInflater inflater = LayoutInflater.from(context);
+            boolean shouldAttachToParentImmediately = false;
+
+            View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
+            return new GroupAdapterViewHolder(view);
+        }
+
+        /**
+         * OnBindViewHolder is called by the RecyclerView to display the data at the specified
+         * position. In this method, we update the contents of the ViewHolder to display the weather
+         * details for this particular position, using the "position" argument that is conveniently
+         * passed into us.
+         *
+         * @param GroupAdapterViewHolder The ViewHolder which should be updated to represent the
+         *                                  contents of the item at the given position in the data set.
+         * @param position                  The position of the item within the adapter's data set.
+         */
+        @Override
+        public void onBindViewHolder(com.example.regev.talk2me.MainActivity.GroupAdapter.GroupAdapterViewHolder GroupAdapterViewHolder, int position) {
+            String[] group = mGroups.get(position);
+            GroupAdapterViewHolder.groupTextView.setText(group[0]);
+            //GroupAdapterViewHolder.groupImageView.setImageURI(new URI(group[1]));
+            if (group[1] == null || group[1] == "") {
+                GroupAdapterViewHolder.groupImageView.setImageResource(R.drawable.ic_account_circle_black_36dp);
+            } else {
+                Glide.with(MainActivity.this)
+                        .load(group[1])
+                        .into(GroupAdapterViewHolder.groupImageView);
+            }
+        }
+
+        /**
+         * This method simply returns the number of items to display. It is used behind the scenes
+         * to help layout our Views and for animations.
+         *
+         * @return The number of items available in our forecast
+         */
+        @Override
+        public int getItemCount() {
+            if (null == mGroups) return 0;
+            return mGroups.size();
+        }
+
+        /**
+         * This method is used to set the weather forecast on a ForecastAdapter if we've already
+         * created one. This is handy when we get new data from the web but don't want to create a
+         * new ForecastAdapter to display it.
+         *
+         * @param groupData The new weather data to be displayed.
+         */
+        public void setGroupData(Vector<String[]> groupData) {
+            mGroups = groupData;
+            notifyDataSetChanged();
+        }
+    }
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
         TextView messageTextView;
@@ -91,13 +246,17 @@ public class MainActivity extends AppCompatActivity
     private SharedPreferences mSharedPreferences;
     private GoogleApiClient mGoogleApiClient;
     private static final String MESSAGE_URL = "http://talk2me.firebase.google.com/message/";
-    private String mUserId;
+    //private String mUserId;
     private Button mSendButton;
     private Button mCreateButton;
     private Button mJoinButton;
     private RecyclerView mMessageRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
-    private ProgressBar mProgressBar;
+    private LinearLayoutManager mLinearLayoutManager2;
+    private RecyclerView mGroupRecyclerView;
+    private GroupAdapter mGroupAdapter;
+    final Context mContext = this;
+    //private ProgressBar mProgressBar;
     private EditText mMessageEditText;
     private ImageView mAddMessageImageView;
 
@@ -108,6 +267,7 @@ public class MainActivity extends AppCompatActivity
     private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
             mFirebaseAdapter;
     //private String mToken;
+    private String mEmail;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,15 +283,30 @@ public class MainActivity extends AppCompatActivity
         //mToken = FirebaseInstanceId.getInstance().getToken();
         //Log.i(TAG, "FCM Registration Token: " + token);
         if (mFirebaseUser != null) {
-            mUserId = mFirebaseUser.getToken(true).toString();
+            //mUserId = mFirebaseUser.getToken(true).toString();
+            //mUsername = mFirebaseUser.getEmail();
+            //mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
+            mUsername = mFirebaseUser.getEmail();
+            if (mFirebaseUser.getPhotoUrl() != null) {
+                mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
+            }
             String token = FirebaseInstanceId.getInstance().getToken();
             Log.i(TAG, "FCMP Registration Token: " + token);
             //update server of your token
-            FriendlyMessage message = new FriendlyMessage("USER_ID",MyFirebaseInstanceIdService.UPDATE_TOKEN,mUserId,"aaaa");
+            //FriendlyMessage message = new FriendlyMessage("USER_ID",MyFirebaseInstanceIdService.UPDATE_TOKEN,mUserId,"aaaa");
+            String type = "sign_in";
+            //String user_id = "Regev";
+            String firebase_token = token;
+
+
+            ClientToServerMessage msg = new ClientToServerMessage(type,mUsername,firebase_token,mPhotoUrl, "","",
+                    null,
+                    null, "");
             mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
             //mFirebaseDatabaseReference.child(MESSAGES_CHILD)
             //        .push().setValue(message);
-            mFirebaseDatabaseReference.push().setValue(message);
+            //mFirebaseDatabaseReference.push().setValue(message);
+            mFirebaseDatabaseReference.push().setValue(msg);
         }
         if (mFirebaseUser == null) {
             // Not signed in, launch the Sign In activity
@@ -139,10 +314,7 @@ public class MainActivity extends AppCompatActivity
             finish();
             return;
         } else {
-            mUsername = mFirebaseUser.getDisplayName();
-            if (mFirebaseUser.getPhotoUrl() != null) {
-                mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
-            }
+
         }
 
 
@@ -152,10 +324,26 @@ public class MainActivity extends AppCompatActivity
                 .build();
 
         // Initialize ProgressBar and RecyclerView.
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        mMessageRecyclerView = (RecyclerView) findViewById(R.id.messageRecyclerView);
+        //mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mLinearLayoutManager = new LinearLayoutManager(this);
         mLinearLayoutManager.setStackFromEnd(true);
+        mLinearLayoutManager2 = new LinearLayoutManager(this);
+        mLinearLayoutManager2.setStackFromEnd(true);
+
+        mMessageRecyclerView = (RecyclerView) findViewById(R.id.messageRecyclerView);
+        mGroupRecyclerView = (RecyclerView) findViewById(R.id.groupRecyclerView);
+        mGroupAdapter = new GroupAdapter(this);
+        mGroupRecyclerView.setAdapter(mGroupAdapter);
+        //add a group just to see it and debug...
+        Vector<String[]> groups = new Vector<String[]>();
+        String[] group = new String[2];
+        group[0] = "GRgr";
+        group[1] = null;
+        groups.add(0,group);
+        mGroupAdapter.setGroupData(groups);
+        //done adding
+        mGroupRecyclerView.setLayoutManager(mLinearLayoutManager2);
+        mGroupRecyclerView.setVisibility(View.VISIBLE);
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
 
         // New child entries
@@ -163,15 +351,15 @@ public class MainActivity extends AppCompatActivity
         mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage,
                 MessageViewHolder>(
                 FriendlyMessage.class,
-                R.layout.group_layout,
+                R.layout.group_item_view,
                 MessageViewHolder.class,
                 mFirebaseDatabaseReference.child(MESSAGES_CHILD)) {
 
             @Override
             protected void populateViewHolder(final MessageViewHolder viewHolder,
                                               FriendlyMessage friendlyMessage, int position) {
-                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                if (friendlyMessage.getText() != null) {
+                //mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                /*if (friendlyMessage.getText() != null) {
                     viewHolder.messageTextView.setText(friendlyMessage.getText());
                     viewHolder.messageTextView.setVisibility(TextView.VISIBLE);
                     viewHolder.messageImageView.setVisibility(ImageView.GONE);
@@ -213,7 +401,7 @@ public class MainActivity extends AppCompatActivity
                     Glide.with(MainActivity.this)
                             .load(friendlyMessage.getPhotoUrl())
                             .into(viewHolder.messengerImageView);
-                }
+                }*/
 
             }
         };
@@ -280,6 +468,8 @@ public class MainActivity extends AppCompatActivity
 
                     }
                 });
+                //Also launch the group activity to check if it works...
+
             }
         });
 
@@ -291,6 +481,123 @@ public class MainActivity extends AppCompatActivity
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 intent.setType("image/*");
                 startActivityForResult(intent, REQUEST_IMAGE);
+            }
+        });
+
+        // set mButton on click listener
+        mCreateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                // inflate alert dialog xml
+                LayoutInflater li2 = LayoutInflater.from(mContext);
+                View dialogView2 = li2.inflate(R.layout.create_group_dialog, null);
+                AlertDialog.Builder alertDialogBuilder2 = new AlertDialog.Builder(mContext);
+                // set title
+                alertDialogBuilder2.setTitle("Group creation");
+                // set custom dialog icon
+                //alertDialogBuilder.setIcon(R.drawable.ic_launcher);
+                // set custom_dialog.xml to alertdialog builder
+                alertDialogBuilder2.setView(dialogView2);
+                final EditText userInputGroupname = (EditText) dialogView2
+                        .findViewById(R.id.et_group_name_input);
+                // set dialog message
+                alertDialogBuilder2
+                        .setCancelable(false)
+                        .setPositiveButton("Create",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,
+                                                        int id) {
+                                        // get user input and set it to etOutput
+                                        // edit text
+                                        //etOutput.setText(userInputMission.getText() + " Due "+userInputDate.getText());
+                                        if(!(userInputGroupname.getText().length() == 0 ))
+                                        {
+                                            //Sending a create group message to the server.
+                                            //TODO create the group...
+                                            String type = "create_group";
+                                            String groupName = userInputGroupname.getText().toString();
+
+
+                                            ClientToServerMessage msg = new ClientToServerMessage(type,mUsername,"token",mPhotoUrl, groupName,
+                                                    "gr_pin",
+                                                    null,
+                                                    null, "user_to_lock");
+                                            //mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+                                            mFirebaseDatabaseReference.push().setValue(msg);
+                                            //group created, now handler for ground_created message will take over.
+                                        }
+
+                                    }
+                                })
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,
+                                                        int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                // create alert dialog
+                AlertDialog alertDialog2 = alertDialogBuilder2.create();
+                // show it
+                alertDialog2.show();
+            }
+        });
+
+        // set mButton on click listener
+        mJoinButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                // inflate alert dialog xml
+                LayoutInflater li2 = LayoutInflater.from(mContext);
+                View dialogView2 = li2.inflate(R.layout.join_group_dialog, null);
+                AlertDialog.Builder alertDialogBuilder2 = new AlertDialog.Builder(mContext);
+                // set title
+                alertDialogBuilder2.setTitle("Group join");
+                // set custom dialog icon
+                //alertDialogBuilder.setIcon(R.drawable.ic_launcher);
+                // set custom_dialog.xml to alertdialog builder
+                alertDialogBuilder2.setView(dialogView2);
+                final EditText userInputGroupPIN = (EditText) dialogView2
+                        .findViewById(R.id.et_group_name_join_input);
+                // set dialog message
+                alertDialogBuilder2
+                        .setCancelable(false)
+                        .setPositiveButton("Join",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,
+                                                        int id) {
+                                        // get user input and set it to etOutput
+                                        // edit text
+                                        //etOutput.setText(userInputMission.getText() + " Due "+userInputDate.getText());
+                                        if(!(userInputGroupPIN.getText().length() == 0 ))
+                                        {
+                                            //TODO join the group...
+                                            String type = "join_group";
+                                            String groupPIN = userInputGroupPIN.getText().toString();
+
+
+                                            ClientToServerMessage msg = new ClientToServerMessage(type,mUsername,"token",mPhotoUrl, "gr_name",
+                                                    groupPIN,
+                                                    null,
+                                                    null, "user_to_lock");
+                                            //mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+                                            mFirebaseDatabaseReference.push().setValue(msg);
+                                            //group created, now handler for ground_created message will take over.
+                                        }
+
+                                    }
+                                })
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,
+                                                        int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                // create alert dialog
+                AlertDialog alertDialog2 = alertDialogBuilder2.create();
+                // show it
+                alertDialog2.show();
             }
         });
     }
@@ -404,5 +711,14 @@ public class MainActivity extends AppCompatActivity
         // be available.
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
+    }
+
+    private void sendToServer(String type,Dictionary<String,String> fields)
+    {
+        //ClientToServerMessage message = new ClientToServerMessage(type,fields.get("user_id"),fields.get("");
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        //mFirebaseDatabaseReference.child(MESSAGES_CHILD)
+        //        .push().setValue(message);
+        //mFirebaseDatabaseReference.push().setValue(message);
     }
 }

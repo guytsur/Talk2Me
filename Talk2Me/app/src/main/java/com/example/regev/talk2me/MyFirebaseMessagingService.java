@@ -31,14 +31,15 @@ import com.google.firebase.messaging.RemoteMessage;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFMService";
-
+    //this runs on all data messages from guy's server
     public void onMessageReceived(RemoteMessage remoteMessage) {
         // Handle data payload of FCM messages.
         Log.d(TAG, "FCM Message Id: " + remoteMessage.getMessageId());
-        Log.d(TAG, "FCM Notification Message: " + remoteMessage.getNotification());
-        Log.d(TAG, "FCM Data Message: " + remoteMessage.getData());
+        //Log.d(TAG, "FCM Notification Message: " + remoteMessage.getNotification());
+        Log.d(TAG, "FCM Data Message: " + remoteMessage.getData().get("new_member"));
         //sendNotification(remoteMessage.getFrom() + ": " + remoteMessage.getNotification().getBody() );
         //Toast.makeText(this, "Guy tsur rocks", Toast.LENGTH_SHORT).show();
+        //TODO Handle all recieved messages from the server, including Lock message which should pop up an alarm.
     }
 
     private void sendNotification(String messageBody) {
