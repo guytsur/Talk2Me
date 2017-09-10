@@ -73,23 +73,35 @@ var existingGroupPIN = {};
 
 var test_pin = undefined
 
+
 function handleMessage(message){
     if (message !== null){
-    console.log("Got message " + message[Object.keys(message)[0]].message_type)
-    message = message[Object.keys(message)[0]]
-    switch(message.message_type){
+	console.log("Got message " + message.ttm_message_type)
+    //console.log("Got message " + message[Object.keys(message)[0]].ttm_message_type)
+    //message = message[Object.keys(message)[0]]
+    switch(message.ttm_message_type){
         case 'create_group':
         messageHandler.create_group(message);
         break;
     case 'sign_in':
          messageHandler.sign_in(message);
         break;
+    case 'sign_in':
+         messageHandler.sign_in(message);
+        break;
+
     case 'join_group':
         messageHandler.join_group(message);
         break; 
     case 'leave_group':
         messageHandler.leave_group(message);
         break; 
+    case 'lock_request':
+        messageHandler.lock_request(message);
+        break;
+	case 'device_locked':
+		messageHandler.device_locked(message)
+
         
     default:
         console.log("Unknown message type")
@@ -110,6 +122,33 @@ var messageHandler = {
     	users_token_dict[message.user_id] = message.firebase_token
     },
     
+'lock_request': function handleRequestLock(message){
+		//check that the requester is really in the group
+    	if (message.user_id in group_dict[message.group_pin]){
+				//check that the user that should be locked is in the same group
+				if (message.user_id_to_lock in group_dict[message.group_pin]){
+					sendLockDevice(message.user_id)
+				}
+		}
+		
+    },
+
+
+    
+'device_locked': function handleDeviceLocked(message){
+             
+			members = groups_dict[message.group_pin].members
+			sendGroupFound(message.user_id, groups_dict[message.group_pin])
+            //for each (member in members){
+            members.forEach(function(member){
+                if (message.user_id != member){
+                    sendLockRequestWorked(message.user_id, member)
+                }
+            })
+                
+    	    
+    },
+ 
 'join_group': function handleJoingGroup(message){
         if (groups_dict[message.group_pin] === undefined){
             sendGroupReqFailed(message.user_id, message.group_pin, 'group_full')
@@ -140,7 +179,7 @@ var messageHandler = {
 	members = groups_dict[message.group_pin].members
 	members.forEach(function(member){
 		if (message.user_id != member){
-			sendMemberLeftGroup(message.user_id, member)
+			sendMemberLeftGroup(message.user_id, member,message.group_pin, message.group_pin)
 		}
 		})
 		index = members.indexOf(message.user_id)
@@ -153,7 +192,8 @@ var messageHandler = {
 }
 
 function addGroupToDict(message, callback){
-    found = false
+    var found = false
+	var group_pin
     while (!found) {
         var uid = ("0000" + ((Math.random() * Math.pow(36, 4)) | 0).toString(36)).slice(-4);
         if (!existingGroupPIN.hasOwnProperty(uid)) {
@@ -170,10 +210,22 @@ function addGroupToDict(message, callback){
 	callback(message.user_id, group_pin)
 }
 
-function sendMemberLeftGroup(leaving_user_id, remaining_user_id){
-    var message = { 
-        message_type: 'member_left_group',
+function sendLockRequestWorked(locked_member, message_target){
+	var message = { 
         data: {  
+			ttm_message_type: 'lock_request_worked',
+            //group_pin: group_pin,
+            locked_member:leaving_user_id
+        }
+    }
+	sendMessageTo(message, message_target)
+}
+
+
+function sendMemberLeftGroup(leaving_user_id, remaining_user_id, group_pin){
+    var message = { 
+        data: {  
+			ttm_message_type: 'member_left_group',
             group_pin: group_pin,
             new_member:leaving_user_id
         }
@@ -184,9 +236,8 @@ function sendMemberLeftGroup(leaving_user_id, remaining_user_id){
 
 function sendNewGroupMember(new_member_user_id, old_member_user_id){
     var message = { 
-        message_type: 'new_group_member',
-        data: {  
-            group_pin: group_pin,
+		data: {  
+			ttm_message_type: 'new_group_member',
             new_member:new_member_user_id
         }
     }
@@ -194,11 +245,21 @@ function sendNewGroupMember(new_member_user_id, old_member_user_id){
 }
 
 
+function sendLockDevice(user_id){
+	var message = {         
+        data: {  
+			ttm_message_type: 'lock_device',
+            user_id: user_id
+
+        }
+    }
+	sendMessageTo(message, user_id)
+}
 
 function sendGroupCreated(user_id, group_pin){
-	var message = { 
-        message_type: 'group_created',
+	var message = {         
         data: {  
+			ttm_message_type: 'group_created',
             group_pin: group_pin,
 
         }
@@ -208,8 +269,8 @@ function sendGroupCreated(user_id, group_pin){
 
 function sendGroupReqFailed(user_id, group_pin, reason){
 	var message = { 
-        message_type: 'group_req_failed',
         data: {  
+			ttm_message_type: 'group_req_failed',
             group_pin: group_pin,
             reason: reason,
 
@@ -223,8 +284,8 @@ function sendGroupReqFailed(user_id, group_pin, reason){
 
 function sendGroupFound(user_id, group){
 	var message = { 
-        message_type: 'group_found',
         data: {  
+			ttm_message_type: 'group_found',
             group_name: group.group_name,
             group_members: group.members,
 
@@ -235,7 +296,7 @@ function sendGroupFound(user_id, group){
 
 }
 
-
+//------------------------------------------------end of message handler----------------------------
 function sendMessageTo(message, user_id){
 	message.to = users_token_dict[user_id]
 	fcm.send(message, function(err, response){
