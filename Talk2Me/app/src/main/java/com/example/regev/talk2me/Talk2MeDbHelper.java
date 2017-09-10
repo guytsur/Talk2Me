@@ -24,14 +24,15 @@ public class Talk2MeDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
         // Create a table to hold waitlist data
-        /*final String SQL_CREATE_WAITLIST_TABLE = "CREATE TABLE " + WaitlistEntry.TABLE_NAME + " (" +
-                WaitlistEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                WaitlistEntry.COLUMN_GUEST_NAME + " TEXT NOT NULL, " +
-                WaitlistEntry.COLUMN_PARTY_SIZE + " INTEGER NOT NULL, " +
-                WaitlistEntry.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+        final String SQL_CREATE_TALK2ME_TABLE = "CREATE TABLE " + Talk2MeContract.MemberEntry.TABLE_NAME + " (" +
+                Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN + " TEXT NOT NULL, " +
+                Talk2MeContract.MemberEntry.COLUMN_GROUP_NAME + " TEXT NOT NULL, " +
+                Talk2MeContract.MemberEntry.COLUMN_GROUP_PHOTO + " TEXT, " +
+                Talk2MeContract.MemberEntry.COLUMN_USER_NAME + " TEXT NOT NULL, " +
+                Talk2MeContract.MemberEntry.COLUMN_USER_PHOTO + " TEXT, " +
+                Talk2MeContract.MemberEntry.COLUMN_USER_LOCKED + " BOOL NOT NULL" +
                 "); ";
-
-        sqLiteDatabase.execSQL(SQL_CREATE_WAITLIST_TABLE);*/
+        sqLiteDatabase.execSQL(SQL_CREATE_TALK2ME_TABLE);
     }
 
     @Override
@@ -40,7 +41,7 @@ public class Talk2MeDbHelper extends SQLiteOpenHelper {
         // DATABASE_VERSION the table will be dropped.
         // In a production app, this method might be modified to ALTER the table
         // instead of dropping it, so that existing data is not deleted.
-        //sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + WaitlistEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + Talk2MeContract.MemberEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 

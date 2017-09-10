@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
@@ -346,6 +347,32 @@ public class MainActivity extends AppCompatActivity
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
                 .build();
+        //DB init
+        Talk2MeDbHelper dbHelper = new Talk2MeDbHelper(this);
+        mDb = dbHelper.getReadableDatabase();
+        //get all the data from the DB in order to init the activity
+        String[] groupColumns = new String[3];
+        groupColumns[0] = Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN;
+        groupColumns[1] = Talk2MeContract.MemberEntry.COLUMN_GROUP_NAME;
+        groupColumns[2] = Talk2MeContract.MemberEntry.COLUMN_GROUP_PHOTO;
+        Cursor cursor = mDb.query(Talk2MeContract.MemberEntry.TABLE_NAME,groupColumns,null,null,null,null,Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN);
+        //Cursor cursor = mDb.query(Talk2MeContract.MemberEntry.TABLE_NAME,)
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast())
+        {
+            //add the data to the groups vector
+        }
+        //
+        Vector<Group> groups = new Vector<Group>();
+        Group group = new Group("Ggrgr","342423",null);
+        group.addMember(new GroupMember("wasim",null,false));
+        group.addMember(new GroupMember("walid",null,false));
+        group.addMember(new GroupMember("wakff",null,false));
+        group.addMember(new GroupMember("wasi",null,false));
+        //group[0] = "GRgr";
+        //group[1] = null;
+        groups.add(group);
+
 
         // Initialize ProgressBar and RecyclerView.
         //mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -359,15 +386,6 @@ public class MainActivity extends AppCompatActivity
         mGroupAdapter = new GroupAdapter(this);
         mGroupRecyclerView.setAdapter(mGroupAdapter);
         //add a group just to see it and debug...
-        Vector<Group> groups = new Vector<Group>();
-        Group group = new Group("Ggrgr","342423",null);
-        group.addMember(new GroupMember("wasim",null,false));
-        group.addMember(new GroupMember("walid",null,false));
-        group.addMember(new GroupMember("wakff",null,false));
-        group.addMember(new GroupMember("wasi",null,false));
-        //group[0] = "GRgr";
-        //group[1] = null;
-        groups.add(group);
         mGroupAdapter.setGroupData(groups);
         //done adding
         mGroupRecyclerView.setLayoutManager(mLinearLayoutManager2);
