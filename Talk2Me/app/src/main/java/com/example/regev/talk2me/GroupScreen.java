@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -271,6 +272,7 @@ public class GroupScreen extends AppCompatActivity implements MemberAdapterOnCli
     private RecyclerView mMembersRecyclerView;
     private GroupScreen.MemberAdapter mMemberAdapter;
     final Context mContext = this;
+    private SQLiteDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -19,6 +19,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
@@ -28,21 +29,45 @@ import android.widget.Toast;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-public class MyFirebaseMessagingService extends FirebaseMessagingService {
+import java.util.Map;
 
+public class MyFirebaseMessagingService extends FirebaseMessagingService {
+    final String MESSAGE_TYPE = "ttm_message_type";
     private static final String TAG = "MyFMService";
+    private SQLiteDatabase mDb;
     //this runs on all data messages from guy's server
     public void onMessageReceived(RemoteMessage remoteMessage) {
         // Handle data payload of FCM messages.
         Log.d(TAG, "FCM Message Id: " + remoteMessage.getMessageId());
         //Log.d(TAG, "FCM Notification Message: " + remoteMessage.getNotification());
-        Log.d(TAG, "FCM Data Message: " + remoteMessage.getData().get("new_member"));
-        String messageType = remoteMessage.getData().get("message_type");
+        Log.d(TAG, "FCM Data Message: " +remoteMessage.getData());
 
-        if(messageType.equals("group_created"))
+        Map<String,String> data = remoteMessage.getData();
+        String messageType = data.get(MESSAGE_TYPE);
+        if (messageType == null)
+        {
+            Log.d(TAG, "FCM Data Message: null" );
+        }
+        else if(messageType.equals("group_created"))
         {
             //TODO create a group by this name with only me as a member
             //Recieved params: group_pin, group_name
+            Log.d(TAG, "FCM Data Message: success" );
+            Context context = this;
+            //Toast.makeText(context, groupName, Toast.LENGTH_SHORT).show();
+            //TODO Launch group viewing activity of the clicked group.
+            //TODO bom
+            // COMPLETED (3) Remove the Toast and launch the DetailActivity using an explicit Intent
+            Class destinationClass = GroupScreen.class;
+            Intent intentToStartDetailActivity = new Intent(context, destinationClass);
+            Group gr = new Group("a,","b","c");
+            GroupMember grr = new GroupMember("a","b",false);
+            intentToStartDetailActivity.putExtra("group",gr);
+            intentToStartDetailActivity.putExtra("username",grr);
+            //intentToStartDetailActivity.putExtra("groupName",groupName);
+            //intentToStartDetailActivity.putExtra("groupPhoto",groupPhoto);
+            //TODO send the activity also all the groups members...
+            startActivity(intentToStartDetailActivity);
         }
         else if (messageType.equals("group_found"))
         {

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -287,6 +288,10 @@ public class MainActivity extends AppCompatActivity
             mFirebaseAdapter;
     //private String mToken;
     private String mEmail;
+
+    //database SQL for the app...
+    private SQLiteDatabase mDb;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -530,6 +535,20 @@ public class MainActivity extends AppCompatActivity
                 alertDialogBuilder2.setView(dialogView2);
                 final EditText userInputGroupname = (EditText) dialogView2
                         .findViewById(R.id.et_group_name_input);
+                /*alertDialogBuilder2.setCancelable(false).setNeutralButton("Photo",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,
+                                                int id) {
+                                //TODO add possibility to add a group photo to a group...
+                                Log.d(TAG, "OMGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG");
+                                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                                intent.setType("image/*");
+                                startActivityForResult(intent, REQUEST_IMAGE);
+                            }
+
+                    });*/
+
                 // set dialog message
                 alertDialogBuilder2
                         .setCancelable(false)
@@ -537,18 +556,7 @@ public class MainActivity extends AppCompatActivity
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog,
                                                         int id) {
-                                        //TODO add possibility to add a group photo to a group...
-                                        mAddMessageImageView = (ImageView) findViewById(R.id.addMessageImageView);
-                                        mAddMessageImageView.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View view) {
-                                                Log.d(TAG, "OMGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG");
-                                                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                                                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                                                intent.setType("image/*");
-                                                startActivityForResult(intent, REQUEST_IMAGE);
-                                            }
-                                        });
+
                                         // get user input and set it to etOutput
                                         // edit text
                                         //etOutput.setText(userInputMission.getText() + " Due "+userInputDate.getText());
@@ -577,7 +585,19 @@ public class MainActivity extends AppCompatActivity
                                                         int id) {
                                         dialog.cancel();
                                     }
-                                });
+                                })
+                .setNeutralButton("Photo", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog,
+                int id) {
+                    //TODO add possibility to add a group photo to a group...
+                    Log.d(TAG, "OMGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG");
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("image/*");
+                    startActivityForResult(intent, REQUEST_IMAGE);
+                    //TODO done opening the photo dialog, now see how to add it into the group..
+                }
+                    });
                 // create alert dialog
                 AlertDialog alertDialog2 = alertDialogBuilder2.create();
                 // show it
