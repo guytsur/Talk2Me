@@ -11,7 +11,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-'use strict';
+
+const util = require('util')
 
 const express = require('express');
 
@@ -76,9 +77,10 @@ var test_pin = undefined
 
 function handleMessage(message){
     if (message !== null){
-	console.log("Got message " + message.ttm_message_type)
-    //console.log("Got message " + message[Object.keys(message)[0]].ttm_message_type)
-    //message = message[Object.keys(message)[0]]
+	//console.log("Got message " + message.ttm_message_type)
+    console.log("Got message " + message[Object.keys(message)[0]].ttm_message_type)
+    message = message[Object.keys(message)[0]]
+    console.log("DEBUG: message: " + util.inspect(message,false,null))
     switch(message.ttm_message_type){
         case 'create_group':
         messageHandler.create_group(message);
@@ -153,19 +155,18 @@ var messageHandler = {
     },
  
 'join_group': function handleJoingGroup(message){
+    console.log("DEBUG_JOIN: message: " + util.inspect(message,false,null))
         if (groups_dict[message.group_pin] === undefined){
-            sendGroupReqFailed(message.user_id, message.group_pin, 'group_full')
+            sendGroupReqFailed(message.user_id, message.group_pin, 'group_does_not_exist')
         }
         else{
             members = groups_dict[message.group_pin].members
-    	
         	if (members.length >= MAX_USER_PER_GROUP){
     	        sendGroupReqFailed(message.user_id, message.group_pin, 'group_full')
         	}
         	else {
                 members.push(message.user_id)
                 sendGroupFound(message.user_id, groups_dict[message.group_pin])
-                //for each (member in members){
                 members.forEach(function(member){
                     if (message.user_id != member){
                         sendNewGroupMember(message.user_id, member)
@@ -178,7 +179,7 @@ var messageHandler = {
 	
     
 'leave_group': function handleLeaveGroup(message){
-
+	if (groups_dict[message.group_pin] !== undefined){
 	members = groups_dict[message.group_pin].members
 	members.forEach(function(member){
 		if (message.user_id != member){
@@ -190,7 +191,10 @@ var messageHandler = {
 		if (members.length <= 0){
 			delete groups_dict[message.group_pin]
 			delete existingGroupPIN[message.group_pin]
-	}
+	}}
+	else{
+	console.log("Request to leave an imaginary group")
+}
     },
 }
 
@@ -216,7 +220,7 @@ function addGroupToDict(message, callback){
 function sendLockRequestWorked(locked_member, message_target){
 	var message = { 
         data: {  
-			ttm_message_type: 'lock_request_worked',
+		ttm_message_type: 'lock_request_worked',
             //group_pin: group_pin,
             locked_member:leaving_user_id
         }
@@ -243,9 +247,10 @@ function sendNewGroupMember(new_member_user_id, old_member_user_id){
 			ttm_message_type: 'new_group_member',
             new_member:new_member_user_id
         }
-    }
+	}
 	sendMessageTo(message, old_member_user_id)
 }
+
 
 
 function sendLockDevice(user_id){
@@ -308,7 +313,8 @@ function sendMessageTo(message, user_id){
             console.log(message);
             console.log(err);
       } else {
-            console.log("Successfully sent with response: ", response);
+            console.log("sent to: " + user_id);
+            console.log("Successfully sent with response: ", message);
       }
 	})
 }
