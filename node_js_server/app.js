@@ -86,8 +86,8 @@ function handleMessage(message){
     case 'sign_in':
          messageHandler.sign_in(message);
         break;
-    case 'sign_in':
-         messageHandler.sign_in(message);
+    case 'token_update':
+         messageHandler.token_update(message);
         break;
 
     case 'join_group':
@@ -117,7 +117,10 @@ var messageHandler = {
         sendGroupCreated)
     
     },
-    
+'token_update': function handleTokenUpdate(message){
+    	users_token_dict[message.user_id] = message.firebase_token
+    },
+
 'sign_in': function handleSignIn(message){
     	users_token_dict[message.user_id] = message.firebase_token
     },
