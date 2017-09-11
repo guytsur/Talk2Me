@@ -28,17 +28,23 @@
             android:layout_above="@+id/linearLayout"/>
 
 
-        <Button
-            android:id="@+id/btn_create_group"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_create_group" />
-
-        <Button
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/btn_join_group"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_join_group" />
+            android:layout_width="109dp"
+            android:layout_height="132dp"
+            android:clickable="true"
+            ads:backgroundTint="@color/common_google_signin_btn_text_dark_default"
+            ads:fabSize="mini"
+            ads:srcCompat="@drawable/join_group" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btn_create_group"
+            android:layout_width="109dp"
+            android:layout_height="132dp"
+            android:clickable="true"
+            ads:backgroundTint="@color/common_google_signin_btn_text_dark_default"
+            ads:fabSize="mini"
+            ads:srcCompat="@drawable/create_group" />
 
 
     </LinearLayout>

@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -269,8 +270,8 @@ public class MainActivity extends AppCompatActivity
     private static final String MESSAGE_URL = "http://talk2me.firebase.google.com/message/";
     //private String mUserId;
     private Button mSendButton;
-    private Button mCreateButton;
-    private Button mJoinButton;
+    private FloatingActionButton mCreateButton;
+    private FloatingActionButton mJoinButton;
     private RecyclerView mMessageRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
     private LinearLayoutManager mLinearLayoutManager2;
@@ -303,8 +304,8 @@ public class MainActivity extends AppCompatActivity
         // Initialize Firebase Auth
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
-        mCreateButton = (Button) findViewById(R.id.btn_create_group);
-        mJoinButton = (Button) findViewById(R.id.btn_join_group);
+        mCreateButton = (FloatingActionButton) findViewById(R.id.btn_create_group);
+        mJoinButton = (FloatingActionButton) findViewById(R.id.btn_join_group);
         //mToken = FirebaseInstanceId.getInstance().getToken();
         //Log.i(TAG, "FCM Registration Token: " + token);
         if (mFirebaseUser != null) {
