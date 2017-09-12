@@ -894,7 +894,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onDestroy() {
-        mDb.close();
+        if(mDb != null) {
+            mDb.close();
+        }
         super.onDestroy();
     }
 

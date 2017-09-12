@@ -256,8 +256,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             //TODO Lock the device- pop up an alarm and notify the server that the device was locked.
             //Parameters: group_pin
         }
-        mDb.close();
-
+        if(mDb != null) {
+            mDb.close();
+        }
         //sendNotification(remoteMessage.getFrom() + ": " + remoteMessage.getNotification().getBody() );
         //Toast.makeText(this, "Guy tsur rocks", Toast.LENGTH_SHORT).show();
         //TODO Handle all recieved messages from the server, including Lock message which should pop up an alarm.
