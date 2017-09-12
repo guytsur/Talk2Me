@@ -9,6 +9,7 @@
         android:id="@+id/imageView3"
         android:layout_width="match_parent"
         android:layout_height="88dp"
+        android:scaleType="fitXY"
         app:srcCompat="@drawable/talk2me_logo" />
 
     <TextView
@@ -39,26 +40,36 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="0.19"
         android:orientation="horizontal"
         android:weightSum="1">
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/btn_leave_group"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="76dp"
             android:layout_weight="0.11"
             android:clickable="true"
             app:backgroundTint="@color/colorPrimary"
             app:fabSize="mini"
             app:srcCompat="@drawable/leave_group_symbol" />
 
+        <ImageView
+            android:id="@+id/imageView7"
+            android:layout_width="40dp"
+            android:layout_height="76dp"
+            android:layout_weight="0.20"
+            app:srcCompat="@color/common_google_signin_btn_text_dark_default" />
+
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/btn_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="76dp"
+            android:layout_weight="0.06"
             android:clickable="true"
             app:backgroundTint="@color/colorPrimary"
             app:fabSize="mini"
             app:srcCompat="@drawable/back_symbol" />
+
     </LinearLayout>
 </LinearLayout>

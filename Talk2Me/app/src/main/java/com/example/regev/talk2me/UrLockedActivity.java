@@ -7,6 +7,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
+import java.util.Random;
+
+
+
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -32,6 +37,7 @@ public class UrLockedActivity extends AppCompatActivity {
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
     private View mContentView;
+    private TextView mFullScreenText;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -85,6 +91,19 @@ public class UrLockedActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Random rn = new Random();
+        int rand_num;
+        String[] quotes;
+        quotes = new String[8];
+        quotes[0] ="My Eyes Are Up Here...";
+        quotes[1] ="KEEP CALM\n And Stop Looking At your Phone";
+        quotes[2] ="You There! Stop Looking Into The Screen";
+        quotes[3] ="The Real World is in Full HD you know...";
+        quotes[4] ="NO One Texted You! Stop Looking!";
+        quotes[5] ="Life is Like a Box of Chocolate,\n if you look at your phone, someone will steal them";
+        quotes[6] ="Hey!\n Put it on \"Friend Mode\"";
+        quotes[7] ="Talk\n 2\n Me!";
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_ur_locked);
@@ -92,7 +111,9 @@ public class UrLockedActivity extends AppCompatActivity {
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
-
+        mFullScreenText = (TextView) findViewById(R.id.fullscreen_content);
+        rand_num = rn.nextInt(quotes.length);
+        mFullScreenText.setText(quotes[rand_num]);
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
@@ -105,7 +126,6 @@ public class UrLockedActivity extends AppCompatActivity {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
     }
 
     @Override
