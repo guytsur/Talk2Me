@@ -20,4 +20,8 @@
     <string name="btn_invite_member">Invite</string>
     <string name="btn_back">Back</string>
     <string name="title_activity_group_screen">GroupScreen</string>
+
+    <string name="title_activity_ur_locked">UrLockedActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

@@ -255,6 +255,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         {
             //TODO Lock the device- pop up an alarm and notify the server that the device was locked.
             //Parameters: group_pin
+            Class destinationClass = UrLockedActivity.class;
+            Intent intentToStartDetailActivity = new Intent(this, destinationClass);
+            //intentToStartDetailActivity.putExtra("groupPhoto",groupPhoto);
+            //TODO send the activity also all the groups members...
+            startActivity(intentToStartDetailActivity);
         }
         if(mDb != null) {
             mDb.close();
