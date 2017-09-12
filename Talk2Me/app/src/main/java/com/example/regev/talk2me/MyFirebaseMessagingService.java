@@ -158,7 +158,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_PHOTO, members_photos[i]);
                 mDb.insert(Talk2MeContract.MemberEntry.TABLE_NAME, null, cv);
             }
-            //Log.d("FCM", "first split: " + members[0]);
+            Log.d("FCM", "members: "+ members);
             //Log.d("FCM", "last split: " + members[members.length-1]);
 
 
@@ -207,9 +207,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             //TODO Launch group viewing activity of the group?
             //TODO Think about popping a notification which onclick sends us to the group
             // COMPLETED (3) Remove the Toast and launch the DetailActivity using an explicit Intent
-            Class destinationClass = GroupScreen.class;
-            Intent intentToStartDetailActivity = new Intent(this, destinationClass);
-            Group gr = new Group(data.get(GROUP_NAME),data.get(GROUP_PIN),data.get(GROUP_PHOTO));
+            //Class destinationClass = GroupScreen.class;
+            //Intent intentToStartDetailActivity = new Intent(this, destinationClass);
+            /*Group gr = new Group(data.get(GROUP_NAME),data.get(GROUP_PIN),data.get(GROUP_PHOTO));
             GroupMember grr = new GroupMember(data.get(USER_ID),data.get(USER_PHOTO),false);
             //////////////////////////////////////////////////////////
             //go over all the original group members and add them also to the group.
@@ -231,10 +231,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 membersOfGroup.moveToNext();
             }
             ///////////////////////////////////////////////////////////
-            intentToStartDetailActivity.putExtra("group",gr);
-            intentToStartDetailActivity.putExtra("username",grr);
+            //intentToStartDetailActivity.putExtra("group",gr);
+            //intentToStartDetailActivity.putExtra("username",grr);
             //TODO send the activity also all the groups members...
-            startActivity(intentToStartDetailActivity);
+            //startActivity(intentToStartDetailActivity);*/
         }
         else if (messageType.equals("member_left_group"))
         {
