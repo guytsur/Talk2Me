@@ -118,15 +118,50 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                             */
             //Map<String,String> groupMembers = remoteMessage.getData().get(GROUP_MEMBERS);
             //TODO how does a list of users look like?
+            Log.d("FCM", data.get(GROUP_MEMBERS));
             ContentValues cv = new ContentValues();
+            Group gr = new Group(data.get(GROUP_NAME),data.get(GROUP_PIN),data.get(GROUP_PHOTO));
+
+            //String manipulation + adding users to group...
+            String[] members = data.get(GROUP_MEMBERS).split(",");
+            //TODO update these arrays from guy's message
+            String[] members_photos = new String[members.length];
+            boolean[] members_locked = new boolean[members.length];
+            members[0] = members[0].substring(2,members[0].length()-1);
+            gr.addMember(new GroupMember(members[0],"",false));
             cv.put(Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN, data.get(GROUP_PIN));
             cv.put(Talk2MeContract.MemberEntry.COLUMN_GROUP_NAME, data.get(GROUP_NAME));
             cv.put(Talk2MeContract.MemberEntry.COLUMN_GROUP_PHOTO, data.get(GROUP_PHOTO) );
-            cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_LOCKED, false);
-            cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_NAME, data.get(USER_ID));
-            cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_PHOTO, data.get(USER_PHOTO));
-            // add a new group with the member given in the message.
+            cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_LOCKED, members_locked[0]);
+            cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_NAME, members[0]);
+            cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_PHOTO, members_photos[0]);
             mDb.insert(Talk2MeContract.MemberEntry.TABLE_NAME, null, cv);
+            members[members.length-1] = members[members.length-1].substring(1,members[members.length-1].length() - 2);
+            gr.addMember(new GroupMember(members[members.length-1],"",false));
+            cv.put(Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN, data.get(GROUP_PIN));
+            cv.put(Talk2MeContract.MemberEntry.COLUMN_GROUP_NAME, data.get(GROUP_NAME));
+            cv.put(Talk2MeContract.MemberEntry.COLUMN_GROUP_PHOTO, data.get(GROUP_PHOTO) );
+            cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_LOCKED, members_locked[members.length-1]);
+            cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_NAME, members[members.length-1]);
+            cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_PHOTO, members_photos[members.length-1]);
+            mDb.insert(Talk2MeContract.MemberEntry.TABLE_NAME, null, cv);
+
+            for (int i=1;i < members.length-1;i++)
+            {
+                members[i] = members[i].substring(1,members[i].length() - 1);
+                gr.addMember(new GroupMember(members[i],"",false));
+                cv.put(Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN, data.get(GROUP_PIN));
+                cv.put(Talk2MeContract.MemberEntry.COLUMN_GROUP_NAME, data.get(GROUP_NAME));
+                cv.put(Talk2MeContract.MemberEntry.COLUMN_GROUP_PHOTO, data.get(GROUP_PHOTO) );
+                cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_LOCKED, members_locked[i]);
+                cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_NAME, members[i]);
+                cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_PHOTO, members_photos[i]);
+                mDb.insert(Talk2MeContract.MemberEntry.TABLE_NAME, null, cv);
+            }
+            //Log.d("FCM", "first split: " + members[0]);
+            //Log.d("FCM", "last split: " + members[members.length-1]);
+
+
             //Context context = this;
             //Toast.makeText(context, groupName, Toast.LENGTH_SHORT).show();
             //TODO Launch group viewing activity of the group.
@@ -134,8 +169,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             // COMPLETED (3) Remove the Toast and launch the DetailActivity using an explicit Intent
             Class destinationClass = GroupScreen.class;
             Intent intentToStartDetailActivity = new Intent(this, destinationClass);
-            Group gr = new Group(data.get(GROUP_NAME),data.get(GROUP_PIN),data.get(GROUP_PHOTO));
             GroupMember grr = new GroupMember(data.get(USER_ID),data.get(USER_PHOTO),false);
+            //gr.addMember(grr);
             intentToStartDetailActivity.putExtra("group",gr);
             intentToStartDetailActivity.putExtra("username",grr);
             //intentToStartDetailActivity.putExtra("groupName",groupName);
@@ -147,8 +182,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         {
             //TODO popup a Toast saying group join failed due to non existant pin or full group
             //Params: group_pin,reason	no_PIN  OR group_full
-            Context context = this;
-            Toast.makeText(context, "Error joining group: " + data.get(GROUP_PIN) + " reason: " + data.get(REASON), Toast.LENGTH_SHORT).show();
+            //Context context = this;
+            //Toast.makeText(context, "Error joining group: " + data.get(GROUP_PIN) + " reason: " + data.get(REASON), Toast.LENGTH_SHORT).show();
         }
         else if (messageType.equals("new_group_member"))
         {
