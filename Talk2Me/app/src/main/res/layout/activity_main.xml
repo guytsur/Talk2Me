@@ -12,15 +12,27 @@
     tools:context="com.example.regev.talk2me.MainActivity">
 
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_weight="1.13"
+        android:cropToPadding="true"
+        ads:srcCompat="@drawable/talk2me_logo" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:weightSum="1"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:orientation="vertical">
+        android:layout_alignParentStart="true">
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/groupRecyclerView"
             android:layout_width="match_parent"
@@ -28,17 +40,23 @@
             android:layout_above="@+id/linearLayout"/>
 
 
-        <Button
-            android:id="@+id/btn_create_group"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_create_group" />
-
-        <Button
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/btn_join_group"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_join_group" />
+            android:layout_width="109dp"
+            android:layout_height="132dp"
+            android:clickable="true"
+            ads:backgroundTint="@color/common_google_signin_btn_text_dark_default"
+            ads:fabSize="mini"
+            ads:srcCompat="@drawable/join_group" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btn_create_group"
+            android:layout_width="109dp"
+            android:layout_height="132dp"
+            android:clickable="true"
+            ads:backgroundTint="@color/common_google_signin_btn_text_dark_default"
+            ads:fabSize="mini"
+            ads:srcCompat="@drawable/create_group" />
 
 
     </LinearLayout>
