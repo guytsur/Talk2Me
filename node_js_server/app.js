@@ -16,10 +16,12 @@ const util = require('util')
 
 const express = require('express');
 
-
+//-------global dicts----------------
 var users_token_dict = {}
+var users_picture_dict = {}
 var groups_dict = {}
 var existingGroupPIN = {};
+//-----------------------------------
 var MAX_USER_PER_GROUP = 16
 
 //[INITIALIZE Firebase]
@@ -115,6 +117,8 @@ function handleMessage(message){
 
 var messageHandler = {
 'create_group': function handleCreateGroup(message){
+	var sleep = require('sleep');
+    //sleep.sleep(5)
     addGroupToDict(message,
         sendGroupCreated)
     
@@ -125,16 +129,19 @@ var messageHandler = {
 
 'sign_in': function handleSignIn(message){
     	users_token_dict[message.user_id] = message.firebase_token
+    	users_picture_dict[message.user_id] = message.user_picture_url
+    	
     },
     
 'lock_request': function handleRequestLock(message){
+		sendLockDevice(message.user_id_to_lock)
 		//check that the requester is really in the group
-    	if (message.user_id in group_dict[message.group_pin]){
+    	//if (message.user_id in groups_dict[message.group_pin]){
 				//check that the user that should be locked is in the same group
-				if (message.user_id_to_lock in group_dict[message.group_pin]){
-					sendLockDevice(message.user_id)
-				}
-		}
+		//		if (message.user_id_to_lock in groups_dict[message.group_pin]){
+		//			sendLockDevice(message.user_id)
+		//		}
+		//}
 		
     },
 
@@ -155,25 +162,29 @@ var messageHandler = {
     },
  
 'join_group': function handleJoingGroup(message){
-    console.log("DEBUG_JOIN: message: " + util.inspect(message,false,null))
-        if (groups_dict[message.group_pin] === undefined){
+    message.group_pin = message.group_pin.toLowerCase()
+    if (groups_dict[message.group_pin] === undefined){
             sendGroupReqFailed(message.user_id, message.group_pin, 'group_does_not_exist')
         }
         else{
-            members = groups_dict[message.group_pin].members
-        	if (members.length >= MAX_USER_PER_GROUP){
+        	members = groups_dict[message.group_pin].members
+        	if(members.indexOf(message.user_id) == -1){
+        			          
+    	    	if (members.length >= MAX_USER_PER_GROUP){
     	        sendGroupReqFailed(message.user_id, message.group_pin, 'group_full')
-        	}
-        	else {
-                members.push(message.user_id)
-                sendGroupFound(message.user_id, groups_dict[message.group_pin])
-                members.forEach(function(member){
-                    if (message.user_id != member){
-                        sendNewGroupMember(message.user_id, member)
-                    }
-                    })
-                }
-    	    } 
+        		}
+        		else {
+                	members.push(message.user_id)
+                	sendGroupFound(message.user_id, groups_dict[message.group_pin])
+                	members.forEach(function(member){
+                    	if (message.user_id != member){
+                        	sendNewGroupMember(message.user_id, member, message.group_pin)
+                    		}
+                    	})
+                	}
+    	    }
+	    }
+
     },
 	
 	
@@ -213,7 +224,7 @@ function addGroupToDict(message, callback){
          test_pin = group_pin
     }
    
-	groups_dict[group_pin] = {group_name:message.group_name, group_pin:group_pin, members:[message.user_id]}
+	groups_dict[group_pin] = {group_name:message.group_name, group_pin:group_pin, members:[message.user_id], group_picture_url:message.group_picture_url}
 	callback(message.user_id, group_pin)
 }
 
@@ -234,18 +245,23 @@ function sendMemberLeftGroup(leaving_user_id, remaining_user_id, group_pin){
         data: {  
 			ttm_message_type: 'member_left_group',
             group_pin: group_pin,
-            new_member:leaving_user_id
+            user_id:leaving_user_id
         }
     }
 	sendMessageTo(message, remaining_user_id)
 }
 
 
-function sendNewGroupMember(new_member_user_id, old_member_user_id){
+function sendNewGroupMember(new_member_user_id, old_member_user_id, group_pin){
     var message = { 
 		data: {  
 			ttm_message_type: 'new_group_member',
-            new_member:new_member_user_id
+            user_id:new_member_user_id,
+            group_pin: group_pin, 
+            group_name: groups_dict[group_pin].group_name,
+            group_picture_url: groups_dict[group_pin].group_picture_url,
+            user_picture_url: users_picture_dict[new_member_user_id]
+            
         }
 	}
 	sendMessageTo(message, old_member_user_id)
@@ -269,7 +285,11 @@ function sendGroupCreated(user_id, group_pin){
         data: {  
 			ttm_message_type: 'group_created',
             group_pin: group_pin,
-
+            user_id: user_id,
+            group_name: groups_dict[group_pin].group_name,
+            group_picture_url: groups_dict[group_pin].group_picture_url,
+            user_picture_url: users_picture_dict[user_id]
+            
         }
     }
 	sendMessageTo(message, user_id)
@@ -291,13 +311,20 @@ function sendGroupReqFailed(user_id, group_pin, reason){
 
 
 function sendGroupFound(user_id, group){
+    pics = []
+    //state = []
+    group.members.forEach(function(member){
+		pics.push(users_picture_dict[member])
+		//state.push(users_pictures_
+    })	
 	var message = { 
         data: {  
 			ttm_message_type: 'group_found',
             group_name: group.group_name,
             group_members: group.members,
-
-        }
+            members_pictures:pics,
+            user_id:user_id
+           }
     };
     
 	sendMessageTo(message, user_id)
