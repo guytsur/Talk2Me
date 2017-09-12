@@ -1,10 +1,12 @@
 package com.example.regev.talk2me;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -59,6 +61,8 @@ public class MainActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener,GroupAdapterOnClickHandler {
     private static final int GROUP_SCREEN = 1;
     public static final int ACTION_LEAVE = 100;
+    public static final String MAIN_ACTIVITY = "MainActivity";
+    //public static final String REMOVE_GROUP = "remove_group";
 
     @Override
     public void onClick(Group group) {
@@ -270,6 +274,7 @@ public class MainActivity extends AppCompatActivity
     private GoogleApiClient mGoogleApiClient;
     private static final String MESSAGE_URL = "http://talk2me.firebase.google.com/message/";
     //private String mUserId;
+    private DataUpdateReceiver mdataUpdateReceiver;
     private Button mSendButton;
     private FloatingActionButton mCreateButton;
     private FloatingActionButton mJoinButton;
@@ -796,6 +801,7 @@ public class MainActivity extends AppCompatActivity
         Log.d(TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
         if (requestCode == GROUP_SCREEN)
         {
+            Log.d("FCM","came back from group screen");
             if(resultCode == RESULT_OK)
             {
 
@@ -881,6 +887,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onPause() {
         //mDb.close();
+        if (mdataUpdateReceiver != null) unregisterReceiver(mdataUpdateReceiver);
         super.onPause();
     }
 
@@ -890,6 +897,9 @@ public class MainActivity extends AppCompatActivity
         mdbHelper = new Talk2MeDbHelper(this);
         mDb = mdbHelper.getReadableDatabase();
         updateGroupList();
+        if (mdataUpdateReceiver == null) mdataUpdateReceiver = new DataUpdateReceiver();
+        IntentFilter intentFilter = new IntentFilter("refresh");
+        registerReceiver(mdataUpdateReceiver, intentFilter);
     }
 
     @Override
@@ -931,12 +941,18 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
 
-    private void sendToServer(String type,Dictionary<String,String> fields)
-    {
-        //ClientToServerMessage message = new ClientToServerMessage(type,fields.get("user_id"),fields.get("");
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        //mFirebaseDatabaseReference.child(MESSAGES_CHILD)
-        //        .push().setValue(message);
-        //mFirebaseDatabaseReference.push().setValue(message);
+    private class DataUpdateReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+            String dest = extras.getString("dest");
+            if(dest.equals(MAIN_ACTIVITY))
+            {
+                updateGroupList();
+            }
+
+
+        }
     }
+
 }

@@ -94,17 +94,23 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             //TODO Launch group viewing activity of the group.
             //TODO bom
             // COMPLETED (3) Remove the Toast and launch the DetailActivity using an explicit Intent
-            Class destinationClass = GroupScreen.class;
-            Intent intentToStartDetailActivity = new Intent(this, destinationClass);
+
             Group gr = new Group(data.get(GROUP_NAME),data.get(GROUP_PIN),data.get(GROUP_PHOTO));
-            GroupMember grr = new GroupMember(data.get(USER_ID),data.get(USER_PHOTO),false);
+            GroupMember grr = new GroupMember(data.get(USER_ID),"",false);
             gr.addMember(grr);
+            /*Class destinationClass = GroupScreen.class;
+            Intent intentToStartDetailActivity = new Intent(this, destinationClass);
             intentToStartDetailActivity.putExtra("group",gr);
             intentToStartDetailActivity.putExtra("username",grr);
             //intentToStartDetailActivity.putExtra("groupName",groupName);
             //intentToStartDetailActivity.putExtra("groupPhoto",groupPhoto);
             //TODO send the activity also all the groups members...
-            startActivity(intentToStartDetailActivity);
+            startActivity(intentToStartDetailActivity);*/
+            Intent broadcast = new Intent("refresh");
+            broadcast.putExtra("dest",MainActivity.MAIN_ACTIVITY);
+            //broadcast.putExtra("action",GroupScreen.ADD_MEMBER);
+            //broadcast.putExtra("action",GroupScreen.REMOVE_MEMBER);
+            sendBroadcast(broadcast);
         }
         else if (messageType.equals("group_found"))
         {
@@ -167,16 +173,24 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             //TODO Launch group viewing activity of the group.
             //TODO bom
             // COMPLETED (3) Remove the Toast and launch the DetailActivity using an explicit Intent
-            Class destinationClass = GroupScreen.class;
+
+            //intentToStartDetailActivity.putExtra("groupName",groupName);
+            //intentToStartDetailActivity.putExtra("groupPhoto",groupPhoto);
+            //TODO refresh mainactivity list...
+            Intent broadcast = new Intent("refresh");
+            broadcast.putExtra("dest",MainActivity.MAIN_ACTIVITY);
+            //broadcast.putExtra("action",GroupScreen.ADD_MEMBER);
+            //broadcast.putExtra("action",GroupScreen.REMOVE_MEMBER);
+            sendBroadcast(broadcast);
+            /*Class destinationClass = GroupScreen.class;
             Intent intentToStartDetailActivity = new Intent(this, destinationClass);
             GroupMember grr = new GroupMember(data.get(USER_ID),data.get(USER_PHOTO),false);
             //gr.addMember(grr);
             intentToStartDetailActivity.putExtra("group",gr);
             intentToStartDetailActivity.putExtra("username",grr);
-            //intentToStartDetailActivity.putExtra("groupName",groupName);
-            //intentToStartDetailActivity.putExtra("groupPhoto",groupPhoto);
-            //TODO send the activity also all the groups members...
-            startActivity(intentToStartDetailActivity);
+            startActivity(intentToStartDetailActivity);*/
+
+
         }
         else if (messageType.equals("group_req_failed"))
         {
@@ -235,11 +249,30 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             //intentToStartDetailActivity.putExtra("username",grr);
             //TODO send the activity also all the groups members...
             //startActivity(intentToStartDetailActivity);*/
+            Intent broadcast = new Intent("refresh");
+            //broadcast.putExtra("dest",MainActivity.MAIN_ACTIVITY);
+            broadcast.putExtra("action",GroupScreen.ADD_MEMBER);
+            //broadcast.putExtra("action",GroupScreen.REMOVE_MEMBER);
+            GroupMember grr = new GroupMember(data.get(USER_ID),"",false);
+            broadcast.putExtra("member",grr);
+            sendBroadcast(broadcast);
         }
         else if (messageType.equals("member_left_group"))
         {
             //TODO Remove the designated member from the group.
             //Parameters:group_PIN, left_member
+            String removeMember = "DELETE FROM " + Talk2MeContract.MemberEntry.TABLE_NAME +
+                    " WHERE " + Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN +" = '" + data.get(GROUP_PIN) +"'" +
+                    " AND "+Talk2MeContract.MemberEntry.COLUMN_USER_NAME + " = '" + data.get(USER_ID)+"';";
+            Log.d(TAG,"FCM SQL " + removeMember);
+            mDb.execSQL(removeMember);
+            Intent broadcast = new Intent("refresh");
+            //broadcast.putExtra("dest",MainActivity.MAIN_ACTIVITY);
+            //broadcast.putExtra("action",GroupScreen.ADD_MEMBER);
+            broadcast.putExtra("action",GroupScreen.REMOVE_MEMBER);
+            GroupMember grr = new GroupMember(data.get(USER_ID),"",false);
+            broadcast.putExtra("member",grr);
+            sendBroadcast(broadcast);
         }
         else if (messageType.equals("lock_request_worked"))
         {

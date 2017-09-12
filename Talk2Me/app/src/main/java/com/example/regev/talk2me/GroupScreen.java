@@ -2,9 +2,11 @@ package com.example.regev.talk2me;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
 import android.nfc.Tag;
 import android.os.Bundle;
@@ -35,7 +37,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class GroupScreen extends AppCompatActivity implements MemberAdapterOnClickHandler {
     //RECYCLERVIEW stuff
-
+    public static final String ADD_MEMBER = "add_member";
+    public static final String REMOVE_MEMBER = "remove_member";
     public void onClick(final GroupMember member) {
         Context context = this;
         //Toast.makeText(context, groupName, Toast.LENGTH_SHORT).show();
@@ -258,7 +261,7 @@ public class GroupScreen extends AppCompatActivity implements MemberAdapterOnCli
 
     //END Recycler
 
-
+    private DataUpdateReceiver mdataUpdateReceiver;
     private Group mGroup;
     private String mUsername;
     private TextView mGroupNameTextview;
@@ -332,5 +335,47 @@ public class GroupScreen extends AppCompatActivity implements MemberAdapterOnCli
         });
 
     }
+    private class DataUpdateReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+            String action = extras.getString("action");
+            if(action == null)
+            {
+                return;
+            }
+            if(action.equals(ADD_MEMBER))
+                {
+                    // Add the new member...
+                    GroupMember member = (GroupMember) extras.get("member");
+                    Log.d("FCM:", "adding member: " + member.getName());
+                    mGroup.addMember(member);
+                    mMemberAdapter.setMemberData(mGroup.getmMembers());
+                }
+            else if(action.equals(REMOVE_MEMBER))
+            {
+                // rempove the new member...
+                GroupMember member = (GroupMember) extras.get("member");
+                Log.d("FCM:", "removing member: " + member.getName());
+                mGroup.removeMember(member);
+                mMemberAdapter.setMemberData(mGroup.getmMembers());
+            }
 
+
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mdataUpdateReceiver == null) mdataUpdateReceiver = new DataUpdateReceiver();
+        IntentFilter intentFilter = new IntentFilter("refresh");
+        registerReceiver(mdataUpdateReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        if (mdataUpdateReceiver != null) unregisterReceiver(mdataUpdateReceiver);
+        super.onPause();
+    }
 }
