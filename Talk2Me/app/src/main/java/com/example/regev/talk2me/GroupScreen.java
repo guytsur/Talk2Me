@@ -263,9 +263,8 @@ public class GroupScreen extends AppCompatActivity implements MemberAdapterOnCli
     private String mUsername;
     private TextView mGroupNameTextview;
     private TextView mGroupPhotoTextview;
-    private Button mLeaveGroupButton;
-    private Button mInviteButton;
-    private Button mBackButton;
+    private FloatingActionButton mLeaveGroupButton;
+    private FloatingActionButton mBackButton;
     private Intent mResult;
     private DatabaseReference mFirebaseDatabaseReference;
     private LinearLayoutManager mLinearLayoutManager;
@@ -300,7 +299,7 @@ public class GroupScreen extends AppCompatActivity implements MemberAdapterOnCli
         mMembersRecyclerView.setLayoutManager(mLinearLayoutManager);
         mMembersRecyclerView.setVisibility(View.VISIBLE);
 
-        mBackButton = (Button) findViewById(R.id.btn_back);
+        mBackButton = (FloatingActionButton) findViewById(R.id.btn_back);
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -311,16 +310,7 @@ public class GroupScreen extends AppCompatActivity implements MemberAdapterOnCli
             }
         });
 
-        mInviteButton = (Button) findViewById(R.id.btn_invite_member);
-        mInviteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //TODO implement invite to someone.. by email?
-
-            }
-        });
-
-        mLeaveGroupButton = (Button) findViewById(R.id.btn_leave_group);
+        mLeaveGroupButton = (FloatingActionButton) findViewById(R.id.btn_leave_group);
         mLeaveGroupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -42,27 +42,23 @@
         android:orientation="horizontal"
         android:weightSum="1">
 
-        <Button
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/btn_leave_group"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_leave_group"
-            android:textSize="12sp"
-            android:layout_weight="0.39" />
+            android:layout_height="match_parent"
+            android:layout_weight="0.11"
+            android:clickable="true"
+            app:backgroundTint="@color/colorPrimary"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/leave_group_symbol" />
 
-        <Button
-            android:id="@+id/btn_invite_member"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_invite_member"
-            android:textSize="12sp" />
-
-        <Button
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/btn_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_back"
-            android:textSize="12sp"
-            android:layout_weight="0.45" />
+            android:clickable="true"
+            app:backgroundTint="@color/colorPrimary"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/back_symbol" />
     </LinearLayout>
 </LinearLayout>
