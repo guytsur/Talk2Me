@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity
         Class destinationClass = GroupScreen.class;
         Intent intentToStartDetailActivity = new Intent(mContext, destinationClass);
         intentToStartDetailActivity.putExtra("group",group);
-        intentToStartDetailActivity.putExtra("username",mUsername);
+        intentToStartDetailActivity.putExtra("username",new GroupMember(mUsername,"",false));
         //intentToStartDetailActivity.putExtra("groupName",groupName);
         //intentToStartDetailActivity.putExtra("groupPhoto",groupPhoto);
         //TODO send the activity also all the groups members...

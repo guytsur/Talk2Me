@@ -281,7 +281,8 @@ public class GroupScreen extends AppCompatActivity implements MemberAdapterOnCli
         setContentView(R.layout.activity_group);
         Bundle extras = getIntent().getExtras();
         mGroup = (Group) extras.get("group");
-        mUsername = extras.getString("username");
+        GroupMember user = (GroupMember) extras.get("username");
+        mUsername = user.getName();
         //mGroupName = extras.getString("groupName");
         //mGroupPhoto = extras.getString("groupPhoto");
         mGroupNameTextview = (TextView) findViewById(R.id.groupName);
