@@ -47,7 +47,7 @@ public class Group implements Serializable {
             GroupMember memberI = mMembers.get(i);
             if (memberI.getName().equals(member.getName()) && memberI.getPhotoURL().equals(member.getPhotoURL()))
             {
-                Log.d("ADD","FCM Member duplicate... " + member.getName());
+                //Log.d("ADD","FCM Member duplicate... " + member.getName());
                 return; //member is already in the group...
             }
         }

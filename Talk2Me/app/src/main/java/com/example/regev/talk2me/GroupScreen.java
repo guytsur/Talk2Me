@@ -276,6 +276,7 @@ public class GroupScreen extends AppCompatActivity implements MemberAdapterOnCli
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //TODO update to get stuff from the
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group);
         Bundle extras = getIntent().getExtras();
@@ -334,6 +335,7 @@ public class GroupScreen extends AppCompatActivity implements MemberAdapterOnCli
                 mResult.putExtra("group",mGroup);
                 mResult.putExtra("action", MainActivity.ACTION_LEAVE);
                 setResult(Activity.RESULT_OK, mResult);
+                Log.d("A","FCM leaving group " + mGroup.getmName());
                 finish();
             }
         });

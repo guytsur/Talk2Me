@@ -294,6 +294,7 @@ public class MainActivity extends AppCompatActivity
 
     //database SQL for the app...
     private SQLiteDatabase mDb;
+    private Talk2MeDbHelper mdbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -350,8 +351,9 @@ public class MainActivity extends AppCompatActivity
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
                 .build();
         //DB init
-        Talk2MeDbHelper dbHelper = new Talk2MeDbHelper(this);
+        mdbHelper = new Talk2MeDbHelper(this);
         //for test purposes
+        /*
         mDb = dbHelper.getWritableDatabase();
 
         ContentValues cv = new ContentValues();
@@ -383,9 +385,12 @@ public class MainActivity extends AppCompatActivity
         cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_LOCKED, false);
         cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_NAME, "0");
         cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_PHOTO, "");
-        mDb.insert(Talk2MeContract.MemberEntry.TABLE_NAME, null, cv);
+        mDb.insert(Talk2MeContract.MemberEntry.TABLE_NAME, null, cv);*/
         //in the future read only DB here.
-        //mDb = dbHelper.getReadableDatabase();
+        mDb = mdbHelper.getReadableDatabase();
+        mGroupAdapter = new GroupAdapter(this);
+        updateGroupList();
+        /*
         //get all the data from the DB in order to init the activity
         String[] groupColumns = new String[3];
         groupColumns[0] = Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN;
@@ -423,9 +428,9 @@ public class MainActivity extends AppCompatActivity
             }
             groups.add(group);
             cursor.moveToNext();
-        }
+        }*/
         //
-
+        /*
         Group group = new Group("Ggrgr","342423",null);
         group.addMember(new GroupMember("wasim",null,false));
         group.addMember(new GroupMember("walid",null,false));
@@ -433,7 +438,7 @@ public class MainActivity extends AppCompatActivity
         group.addMember(new GroupMember("wasi",null,false));
         //group[0] = "GRgr";
         //group[1] = null;
-        groups.add(group);
+        groups.add(group);*/
 
 
         // Initialize ProgressBar and RecyclerView.
@@ -445,10 +450,10 @@ public class MainActivity extends AppCompatActivity
 
         mMessageRecyclerView = (RecyclerView) findViewById(R.id.messageRecyclerView);
         mGroupRecyclerView = (RecyclerView) findViewById(R.id.groupRecyclerView);
-        mGroupAdapter = new GroupAdapter(this);
+
         mGroupRecyclerView.setAdapter(mGroupAdapter);
         //add a group just to see it and debug...
-        mGroupAdapter.setGroupData(groups);
+
         //done adding
         mGroupRecyclerView.setLayoutManager(mLinearLayoutManager2);
         mGroupRecyclerView.setVisibility(View.VISIBLE);
@@ -744,6 +749,47 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    private void updateGroupList() {
+        String[] groupColumns = new String[3];
+        groupColumns[0] = Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN;
+        groupColumns[1] = Talk2MeContract.MemberEntry.COLUMN_GROUP_NAME;
+        groupColumns[2] = Talk2MeContract.MemberEntry.COLUMN_GROUP_PHOTO;
+        String[] memberColumns = new String[4];
+        memberColumns[0] = Talk2MeContract.MemberEntry.COLUMN_USER_NAME;
+        memberColumns[1] = Talk2MeContract.MemberEntry.COLUMN_USER_PHOTO;
+        memberColumns[2] = Talk2MeContract.MemberEntry.COLUMN_USER_LOCKED;
+        memberColumns[3] = Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN;
+        //Cursor cursor = mDb.query(Talk2MeContract.MemberEntry.TABLE_NAME,groupColumns,null,null,null,null,Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN);
+        Cursor cursor = mDb.query(Talk2MeContract.MemberEntry.TABLE_NAME,groupColumns,null,null,Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN,null,null);
+        Vector<Group> groups = new Vector<Group>();
+        cursor.moveToFirst();
+        //Log.d(TAG, cursor.getCount() + " groups FCM");
+        while(!cursor.isAfterLast())
+        {
+            //add the data to the groups vector
+            //Log.d(TAG, cursor.getString(0) + " FCM");
+            Group group = new Group(cursor.getString(cursor.getColumnIndex(Talk2MeContract.MemberEntry.COLUMN_GROUP_NAME)),
+                    cursor.getString(cursor.getColumnIndex(Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN)),
+                    cursor.getString(cursor.getColumnIndex(Talk2MeContract.MemberEntry.COLUMN_GROUP_PHOTO)));
+            //TODO query the group ID and add all members. DONE
+            Cursor membersOfGroup = mDb.query(Talk2MeContract.MemberEntry.TABLE_NAME,memberColumns,Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN+"='"+cursor.getString(cursor.getColumnIndex(Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN))+"'"
+                    ,null,null,null,null);
+            //Log.d(TAG, membersOfGroup.getCount() + " members FCM");
+            membersOfGroup.moveToFirst();
+            while(!membersOfGroup.isAfterLast() && membersOfGroup.getCount() != 0)
+            {
+                //Log.d(TAG, membersOfGroup.getString(membersOfGroup.getColumnIndex(Talk2MeContract.MemberEntry.COLUMN_USER_NAME)) + " member FCM");
+                group.addMember(new GroupMember(membersOfGroup.getString(membersOfGroup.getColumnIndex(Talk2MeContract.MemberEntry.COLUMN_USER_NAME)),
+                        membersOfGroup.getString(membersOfGroup.getColumnIndex(Talk2MeContract.MemberEntry.COLUMN_USER_PHOTO)),
+                        false));
+                membersOfGroup.moveToNext();
+            }
+            groups.add(group);
+            cursor.moveToNext();
+        }
+        mGroupAdapter.setGroupData(groups);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -754,14 +800,19 @@ public class MainActivity extends AppCompatActivity
             {
 
                 Bundle extras = data.getExtras();
-                Log.d(TAG, "GROUP WAS SUPPOSED TO BE REMOVEDDDDDDDDDDDD: " + (extras.getInt("action") == ACTION_LEAVE));
-                String action = extras.getString("action");
+                Log.d(TAG, "FCM GROUP WAS SUPPOSED TO BE REMOVEDDDDDDDDDDDD: " + (extras.getInt("action") == ACTION_LEAVE));
+                //String action = extras.getInt("action");
                 if(extras.getInt("action") == ACTION_LEAVE)
                 {
                     //TODO delete group from list..
-                    Log.d(TAG, "GROUP WAS SUPPOSED TO BE REMOVEDDDDDDDDDDDD: " + extras.getString("action"));
+                    //Log.d(TAG, "GROUP WAS SUPPOSED TO BE REMOVEDDDDDDDDDDDD: " + extras.getString("action"));
                     Group toDelete = (Group) extras.get("group");
+                    Log.d(TAG,"FCM removing group " + toDelete.getmName());
                     mGroupAdapter.removeGroup(toDelete);
+                    String removeGroup = "DELETE FROM " + Talk2MeContract.MemberEntry.TABLE_NAME + " WHERE " + Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN +" = '" + toDelete.getmPIN() +"';";
+                    Log.d(TAG,"FCM SQL " + removeGroup);
+                    mDb.execSQL(removeGroup);
+                    //TODO delete group from database...
                     Log.d(TAG, "GROUP WAS SUPPOSED TO BE REMOVEDDDDDDDDDDDD");
                 }
             }
@@ -822,22 +873,28 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onStart() {
         super.onStart();
+        updateGroupList();
         // Check if user is signed in.
         // TODO: Add code to check if user is signed in.
     }
 
     @Override
     public void onPause() {
+        //mDb.close();
         super.onPause();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        mdbHelper = new Talk2MeDbHelper(this);
+        mDb = mdbHelper.getReadableDatabase();
+        updateGroupList();
     }
 
     @Override
     public void onDestroy() {
+        mDb.close();
         super.onDestroy();
     }
 

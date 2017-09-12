@@ -39,7 +39,15 @@
             android:layout_height="wrap_content"
             android:layout_above="@+id/linearLayout"/>
 
-
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/btn_join_group"
             android:layout_width="109dp"
@@ -57,7 +65,7 @@
             ads:backgroundTint="@color/common_google_signin_btn_text_dark_default"
             ads:fabSize="mini"
             ads:srcCompat="@drawable/create_group" />
-
+    </LinearLayout>
 
     </LinearLayout>
 
