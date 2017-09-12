@@ -287,7 +287,7 @@ public class GroupScreen extends AppCompatActivity implements MemberAdapterOnCli
         mGroupNameTextview = (TextView) findViewById(R.id.groupName);
         mGroupPhotoTextview = (TextView) findViewById(R.id.groupPhoto);
         mGroupNameTextview.setText("Group Name: " + mGroup.getmName());
-        mGroupPhotoTextview.setText("PhotoURL: " + mGroup.getmPhotoURL());
+        mGroupPhotoTextview.setText("PIN: " + mGroup.getmPIN());
         mResult = new Intent();
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
         mLinearLayoutManager = new LinearLayoutManager(this);
