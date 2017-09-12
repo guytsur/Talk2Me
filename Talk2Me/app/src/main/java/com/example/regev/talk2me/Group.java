@@ -1,5 +1,7 @@
 package com.example.regev.talk2me;
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -45,6 +47,7 @@ public class Group implements Serializable {
             GroupMember memberI = mMembers.get(i);
             if (memberI.getName().equals(member.getName()) && memberI.getPhotoURL().equals(member.getPhotoURL()))
             {
+                Log.d("ADD","FCM Member duplicate... " + member.getName());
                 return; //member is already in the group...
             }
         }

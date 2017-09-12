@@ -1,6 +1,7 @@
 package com.example.regev.talk2me;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -349,21 +350,81 @@ public class MainActivity extends AppCompatActivity
                 .build();
         //DB init
         Talk2MeDbHelper dbHelper = new Talk2MeDbHelper(this);
-        mDb = dbHelper.getReadableDatabase();
+        //for test purposes
+        mDb = dbHelper.getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN, "1234");
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_GROUP_NAME, "123455");
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_GROUP_PHOTO, "");
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_LOCKED, false);
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_NAME, "0");
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_PHOTO, "");
+
+        mDb.insert(Talk2MeContract.MemberEntry.TABLE_NAME, null, cv);
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN, "1");
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_GROUP_NAME, "11");
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_GROUP_PHOTO, "");
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_LOCKED, false);
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_NAME, "0");
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_PHOTO, "");
+        mDb.insert(Talk2MeContract.MemberEntry.TABLE_NAME, null, cv);
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN, "qrw");
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_GROUP_NAME, "aaaa");
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_GROUP_PHOTO, "");
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_LOCKED, false);
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_NAME, "3213120");
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_PHOTO, "0");
+        mDb.insert(Talk2MeContract.MemberEntry.TABLE_NAME, null, cv);
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN, "qrw");
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_GROUP_NAME, "aaaa");
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_GROUP_PHOTO, "");
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_LOCKED, false);
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_NAME, "0");
+        cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_PHOTO, "");
+        mDb.insert(Talk2MeContract.MemberEntry.TABLE_NAME, null, cv);
+        //in the future read only DB here.
+        //mDb = dbHelper.getReadableDatabase();
         //get all the data from the DB in order to init the activity
         String[] groupColumns = new String[3];
         groupColumns[0] = Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN;
         groupColumns[1] = Talk2MeContract.MemberEntry.COLUMN_GROUP_NAME;
         groupColumns[2] = Talk2MeContract.MemberEntry.COLUMN_GROUP_PHOTO;
-        Cursor cursor = mDb.query(Talk2MeContract.MemberEntry.TABLE_NAME,groupColumns,null,null,null,null,Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN);
-        //Cursor cursor = mDb.query(Talk2MeContract.MemberEntry.TABLE_NAME,)
+        String[] memberColumns = new String[4];
+        memberColumns[0] = Talk2MeContract.MemberEntry.COLUMN_USER_NAME;
+        memberColumns[1] = Talk2MeContract.MemberEntry.COLUMN_USER_PHOTO;
+        memberColumns[2] = Talk2MeContract.MemberEntry.COLUMN_USER_LOCKED;
+        memberColumns[3] = Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN;
+        //Cursor cursor = mDb.query(Talk2MeContract.MemberEntry.TABLE_NAME,groupColumns,null,null,null,null,Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN);
+        Cursor cursor = mDb.query(Talk2MeContract.MemberEntry.TABLE_NAME,groupColumns,null,null,Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN,null,null);
+        Vector<Group> groups = new Vector<Group>();
         cursor.moveToFirst();
+        Log.d(TAG, cursor.getCount() + " groups FCM");
         while(!cursor.isAfterLast())
         {
             //add the data to the groups vector
+            Log.d(TAG, cursor.getString(0) + " FCM");
+            Group group = new Group(cursor.getString(cursor.getColumnIndex(Talk2MeContract.MemberEntry.COLUMN_GROUP_NAME)),
+                                    cursor.getString(cursor.getColumnIndex(Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN)),
+                                    cursor.getString(cursor.getColumnIndex(Talk2MeContract.MemberEntry.COLUMN_GROUP_PHOTO)));
+            //TODO query the group ID and add all members. DONE
+            Cursor membersOfGroup = mDb.query(Talk2MeContract.MemberEntry.TABLE_NAME,memberColumns,Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN+"='"+cursor.getString(cursor.getColumnIndex(Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN))+"'"
+                    ,null,null,null,null);
+            Log.d(TAG, membersOfGroup.getCount() + " members FCM");
+            membersOfGroup.moveToFirst();
+            while(!membersOfGroup.isAfterLast() && membersOfGroup.getCount() != 0)
+            {
+                //Log.d(TAG, membersOfGroup.getString(membersOfGroup.getColumnIndex(Talk2MeContract.MemberEntry.COLUMN_USER_NAME)) + " member FCM");
+                group.addMember(new GroupMember(membersOfGroup.getString(membersOfGroup.getColumnIndex(Talk2MeContract.MemberEntry.COLUMN_USER_NAME)),
+                                                membersOfGroup.getString(membersOfGroup.getColumnIndex(Talk2MeContract.MemberEntry.COLUMN_USER_PHOTO)),
+                                                false));
+                membersOfGroup.moveToNext();
+            }
+            groups.add(group);
+            cursor.moveToNext();
         }
         //
-        Vector<Group> groups = new Vector<Group>();
+
         Group group = new Group("Ggrgr","342423",null);
         group.addMember(new GroupMember("wasim",null,false));
         group.addMember(new GroupMember("walid",null,false));

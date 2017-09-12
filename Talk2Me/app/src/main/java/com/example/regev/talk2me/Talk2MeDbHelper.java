@@ -32,6 +32,7 @@ public class Talk2MeDbHelper extends SQLiteOpenHelper {
                 Talk2MeContract.MemberEntry.COLUMN_USER_PHOTO + " TEXT, " +
                 Talk2MeContract.MemberEntry.COLUMN_USER_LOCKED + " BOOL NOT NULL" +
                 "); ";
+
         sqLiteDatabase.execSQL(SQL_CREATE_TALK2ME_TABLE);
     }
 
