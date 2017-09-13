@@ -57,17 +57,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "FCM Data Message: " +data);
         Talk2MeDbHelper dbHelper = new Talk2MeDbHelper(this);
         mDb = dbHelper.getWritableDatabase();
-        /*String[] groupColumns = new String[3];
-        groupColumns[0] = Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN;
-        groupColumns[1] = Talk2MeContract.MemberEntry.COLUMN_GROUP_NAME;
-        groupColumns[2] = Talk2MeContract.MemberEntry.COLUMN_GROUP_PHOTO;
-        Cursor cursor = mDb.query(Talk2MeContract.MemberEntry.TABLE_NAME,groupColumns,null,null,Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN,null,null);
-        Log.d(TAG, cursor.getCount() + " groups FCM READ FROM THE SERVICE");*/
         // Handle data payload of FCM messages.
-        //Log.d(TAG, "FCM Message Id: " + remoteMessage.getMessageId());
-        //Log.d(TAG, "FCM Notification Message: " + remoteMessage.getNotification());
-        //Log.d(TAG, "FCM Data Message: " +remoteMessage.getData());
-
         String messageType = data.get(MESSAGE_TYPE);
         if (messageType == null)
         {
@@ -89,11 +79,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_PHOTO, data.get(USER_PHOTO));
             // add a new group with the member given in the message.
             mDb.insert(Talk2MeContract.MemberEntry.TABLE_NAME, null, cv);
-            //Context context = this;
-            //Toast.makeText(context, groupName, Toast.LENGTH_SHORT).show();
-            //TODO Launch group viewing activity of the group.
-            //TODO bom
-            // COMPLETED (3) Remove the Toast and launch the DetailActivity using an explicit Intent
 
             Group gr = new Group(data.get(GROUP_NAME),data.get(GROUP_PIN),data.get(GROUP_PHOTO));
             GroupMember grr = new GroupMember(data.get(USER_ID),"",false);
@@ -108,8 +93,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             startActivity(intentToStartDetailActivity);*/
             Intent broadcast = new Intent("refresh");
             broadcast.putExtra("dest",MainActivity.MAIN_ACTIVITY);
-            //broadcast.putExtra("action",GroupScreen.ADD_MEMBER);
-            //broadcast.putExtra("action",GroupScreen.REMOVE_MEMBER);
             sendBroadcast(broadcast);
         }
         else if (messageType.equals("group_found"))
@@ -165,14 +148,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 mDb.insert(Talk2MeContract.MemberEntry.TABLE_NAME, null, cv);
             }
             Log.d("FCM", "members: "+ members);
-            //Log.d("FCM", "last split: " + members[members.length-1]);
-
-
-            //Context context = this;
-            //Toast.makeText(context, groupName, Toast.LENGTH_SHORT).show();
-            //TODO Launch group viewing activity of the group.
-            //TODO bom
-            // COMPLETED (3) Remove the Toast and launch the DetailActivity using an explicit Intent
 
             //intentToStartDetailActivity.putExtra("groupName",groupName);
             //intentToStartDetailActivity.putExtra("groupPhoto",groupPhoto);
@@ -216,35 +191,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             cv.put(Talk2MeContract.MemberEntry.COLUMN_USER_PHOTO, data.get(USER_PHOTO));
             // add a new group with the member given in the message.
             mDb.insert(Talk2MeContract.MemberEntry.TABLE_NAME, null, cv);
-            //Context context = this;
-            //Toast.makeText(context, groupName, Toast.LENGTH_SHORT).show();
             //TODO Launch group viewing activity of the group?
             //TODO Think about popping a notification which onclick sends us to the group
-            // COMPLETED (3) Remove the Toast and launch the DetailActivity using an explicit Intent
             //Class destinationClass = GroupScreen.class;
             //Intent intentToStartDetailActivity = new Intent(this, destinationClass);
             /*Group gr = new Group(data.get(GROUP_NAME),data.get(GROUP_PIN),data.get(GROUP_PHOTO));
             GroupMember grr = new GroupMember(data.get(USER_ID),data.get(USER_PHOTO),false);
             //////////////////////////////////////////////////////////
-            //go over all the original group members and add them also to the group.
-            //query the group ID and add all members. DONE
-            String[] memberColumns = new String[4];
-            memberColumns[0] = Talk2MeContract.MemberEntry.COLUMN_USER_NAME;
-            memberColumns[1] = Talk2MeContract.MemberEntry.COLUMN_USER_PHOTO;
-            memberColumns[2] = Talk2MeContract.MemberEntry.COLUMN_USER_LOCKED;
-            memberColumns[3] = Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN;
-            Cursor membersOfGroup = mDb.query(Talk2MeContract.MemberEntry.TABLE_NAME,memberColumns,Talk2MeContract.MemberEntry.COLUMN_GROUP_PIN+"='"+data.get(GROUP_PIN)+"'"
-                    ,null,null,null,null);
-            membersOfGroup.moveToFirst();
-            while(!membersOfGroup.isAfterLast() && membersOfGroup.getCount() != 0)
-            {
-                //Log.d(TAG, membersOfGroup.getString(membersOfGroup.getColumnIndex(Talk2MeContract.MemberEntry.COLUMN_USER_NAME)) + " member FCM");
-                gr.addMember(new GroupMember(membersOfGroup.getString(membersOfGroup.getColumnIndex(Talk2MeContract.MemberEntry.COLUMN_USER_NAME)),
-                        membersOfGroup.getString(membersOfGroup.getColumnIndex(Talk2MeContract.MemberEntry.COLUMN_USER_PHOTO)),
-                        false));
-                membersOfGroup.moveToNext();
-            }
-            ///////////////////////////////////////////////////////////
             //intentToStartDetailActivity.putExtra("group",gr);
             //intentToStartDetailActivity.putExtra("username",grr);
             //TODO send the activity also all the groups members...
@@ -297,15 +250,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if(mDb != null) {
             mDb.close();
         }
-        //sendNotification(remoteMessage.getFrom() + ": " + remoteMessage.getNotification().getBody() );
-        //Toast.makeText(this, "Guy tsur rocks", Toast.LENGTH_SHORT).show();
         //TODO Handle all recieved messages from the server, including Lock message which should pop up an alarm.
     }
-
+    //Sends a notification, useful for the future maby..
+    /*
     private void sendNotification(String messageBody) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 , intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -320,7 +272,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
-    }
+        notificationManager.notify(0 , notificationBuilder.build());
+    }*/
 
 }

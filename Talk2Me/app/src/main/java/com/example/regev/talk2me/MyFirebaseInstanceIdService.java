@@ -48,9 +48,6 @@ public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
         String token = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "FCMPP Token: " + token);
         updateServerToken(token);//TODO update this to the same token sending from mainactivity so it works
-        // Once a token is generated, we subscribe to topic.
-        //FirebaseMessaging.getInstance()
-        //        .subscribeToTopic(FRIENDLY_ENGAGE_TOPIC);
 
     }
     private void updateServerToken(String token)
@@ -62,9 +59,6 @@ public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         if (mFirebaseUser != null) {
-            //mUserId = mFirebaseUser.getToken(true).toString();
-            //mUsername = mFirebaseUser.getEmail();
-            //mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
             mUsername = mFirebaseUser.getEmail();
             if (mFirebaseUser.getPhotoUrl() != null) {
                 mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
@@ -74,9 +68,6 @@ public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
                     null,
                     null, "");
             mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-            //mFirebaseDatabaseReference.child(MESSAGES_CHILD)
-            //        .push().setValue(message);
-            //mFirebaseDatabaseReference.push().setValue(message);
             mFirebaseDatabaseReference.push().setValue(msg);
         }
     }
