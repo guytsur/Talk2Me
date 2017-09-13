@@ -193,7 +193,9 @@ public class GroupScreen extends AppCompatActivity implements MemberAdapterOnCli
         @Override
         public void onBindViewHolder(com.example.regev.talk2me.GroupScreen.MemberAdapter.MemberAdapterViewHolder MemberAdapterViewHolder, int position) {
             GroupMember member = mMembers.get(position);
-            MemberAdapterViewHolder.memberTextView.setText(member.getName());
+            String name = member.getName();
+            String splitName = (name.split("@"))[0];
+            MemberAdapterViewHolder.memberTextView.setText(splitName);
             //GroupAdapterViewHolder.groupImageView.setImageURI(new URI(group[1]));
             if (member.getPhotoURL() == null || member.getPhotoURL().equals("")) {
                 MemberAdapterViewHolder.memberImageView.setImageResource(R.drawable.ic_account_circle_black_36dp);
