@@ -288,9 +288,11 @@ public class GroupScreen extends AppCompatActivity implements MemberAdapterOnCli
                 {
                     // Add the new member...
                     GroupMember member = (GroupMember) extras.get("member");
-                    Log.d("FCM:", "adding member: " + member.getName());
-                    mGroup.addMember(member);
-                    mMemberAdapter.setMemberData(mGroup.getmMembers());
+                    if(member != null && member.getName() != null) {
+                        Log.d("FCM:", "adding member: " + member.getName());
+                        mGroup.addMember(member);
+                        mMemberAdapter.setMemberData(mGroup.getmMembers());
+                    }
                 }
             else if(action.equals(REMOVE_MEMBER))
             {
