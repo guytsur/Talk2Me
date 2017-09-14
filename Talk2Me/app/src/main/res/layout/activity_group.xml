@@ -1,42 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="match_parent"
+        android:layout_height="88dp"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/talk2me_logo" />
+
     <TextView
         android:id="@+id/groupName"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_weight="0.07"
+        android:fontFamily="sans-serif"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
     <TextView
         android:id="@+id/groupPhoto"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_weight="0.10"
+        android:textAlignment="center"
+        android:textSize="18sp" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/groupMembersRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_above="@+id/linearLayout"/>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="horizontal" android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_above="@+id/linearLayout"
+        android:layout_weight="0.74" />
 
-        <Button
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.19"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/btn_leave_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_leave_group"
-            android:textSize="12sp"/>
+            android:layout_width="match_parent"
+            android:layout_height="76dp"
+            android:layout_weight="0.11"
+            android:clickable="true"
+            app:backgroundTint="@color/colorPrimary"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/leave_group_symbol" />
 
-        <Button
-            android:id="@+id/btn_invite_member"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_invite_member"
-            android:textSize="12sp"/>
-        <Button
+        <ImageView
+            android:id="@+id/imageView7"
+            android:layout_width="40dp"
+            android:layout_height="76dp"
+            android:layout_weight="0.20"
+            app:srcCompat="@color/common_google_signin_btn_text_dark_default" />
+
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/btn_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_back"
-            android:textSize="12sp"/>
+            android:layout_width="match_parent"
+            android:layout_height="76dp"
+            android:layout_weight="0.06"
+            android:clickable="true"
+            app:backgroundTint="@color/colorPrimary"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/back_symbol" />
+
     </LinearLayout>
 </LinearLayout>

@@ -9,18 +9,18 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.regev.talk2me.MainActivity">
+    tools:context="com.lb.regev.talk2me.MainActivity">
 
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="54dp"
+        android:layout_height="88dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
         android:layout_weight="1.13"
         android:cropToPadding="true"
+        android:scaleType="fitXY"
         ads:srcCompat="@drawable/talk2me_logo" />
 
     <LinearLayout
@@ -39,7 +39,15 @@
             android:layout_height="wrap_content"
             android:layout_above="@+id/linearLayout"/>
 
-
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/btn_join_group"
             android:layout_width="109dp"
@@ -53,11 +61,12 @@
             android:id="@+id/btn_create_group"
             android:layout_width="109dp"
             android:layout_height="132dp"
+            android:layout_weight="0.19"
             android:clickable="true"
             ads:backgroundTint="@color/common_google_signin_btn_text_dark_default"
             ads:fabSize="mini"
             ads:srcCompat="@drawable/create_group" />
-
+    </LinearLayout>
 
     </LinearLayout>
 
