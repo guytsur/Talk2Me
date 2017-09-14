@@ -1,4 +1,4 @@
-package com.example.regev.talk2me;
+package com.lb.regev.talk2me;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

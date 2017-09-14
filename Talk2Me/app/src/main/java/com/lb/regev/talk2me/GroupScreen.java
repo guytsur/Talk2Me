@@ -1,4 +1,4 @@
-package com.example.regev.talk2me;
+package com.lb.regev.talk2me;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -7,21 +7,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.sqlite.SQLiteDatabase;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,7 +24,6 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.lang.reflect.Member;
 import java.util.Vector;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -95,7 +88,7 @@ public class GroupScreen extends AppCompatActivity implements MemberAdapterOnCli
      * Created by Regev on 9/8/2017.
      */
 
-    public class MemberAdapter extends RecyclerView.Adapter<com.example.regev.talk2me.GroupScreen.MemberAdapter.MemberAdapterViewHolder> {
+    public class MemberAdapter extends RecyclerView.Adapter<com.lb.regev.talk2me.GroupScreen.MemberAdapter.MemberAdapterViewHolder> {
         private Vector<GroupMember> mMembers;
 
     /*
@@ -136,7 +129,7 @@ public class GroupScreen extends AppCompatActivity implements MemberAdapterOnCli
         }
 
         @Override
-        public com.example.regev.talk2me.GroupScreen.MemberAdapter.MemberAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        public com.lb.regev.talk2me.GroupScreen.MemberAdapter.MemberAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
             Context context = viewGroup.getContext();
             int layoutIdForListItem = R.layout.member_item_view;
             LayoutInflater inflater = LayoutInflater.from(context);
@@ -147,7 +140,7 @@ public class GroupScreen extends AppCompatActivity implements MemberAdapterOnCli
         }
 
         @Override
-        public void onBindViewHolder(com.example.regev.talk2me.GroupScreen.MemberAdapter.MemberAdapterViewHolder MemberAdapterViewHolder, int position) {
+        public void onBindViewHolder(com.lb.regev.talk2me.GroupScreen.MemberAdapter.MemberAdapterViewHolder MemberAdapterViewHolder, int position) {
             GroupMember member = mMembers.get(position);
             String name = member.getName();
             String splitName = (name.split("@"))[0];

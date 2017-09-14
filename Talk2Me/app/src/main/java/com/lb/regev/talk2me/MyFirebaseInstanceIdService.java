@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.regev.talk2me;
+package com.lb.regev.talk2me;
 
 import android.util.Log;
 
@@ -23,9 +23,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.messaging.RemoteMessage;
 
 public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
     public static final String MESSAGES_CHILD = "messages";

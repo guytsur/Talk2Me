@@ -1,7 +1,6 @@
-package com.example.regev.talk2me;
+package com.lb.regev.talk2me;
 
 import java.util.Dictionary;
-import java.util.Vector;
 
 /**
  * Created by Regev on 8/24/2017.

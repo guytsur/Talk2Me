@@ -1,4 +1,4 @@
-package com.example.regev.talk2me;
+package com.lb.regev.talk2me;
 
 import android.annotation.SuppressLint;
 import android.support.v7.app.ActionBar;

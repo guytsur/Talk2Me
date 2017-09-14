@@ -1,4 +1,4 @@
-package com.example.regev.talk2me;
+package com.lb.regev.talk2me;
 
 /**
  * Created by Regev on 9/8/2017.

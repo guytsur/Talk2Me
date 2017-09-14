@@ -7,7 +7,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:padding="10dp"
-    tools:context="com.example.regev.talk2me.MainActivity">
+    tools:context="com.lb.regev.talk2me.MainActivity">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

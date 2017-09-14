@@ -1,10 +1,6 @@
-package com.example.regev.talk2me;
-
-import android.util.Log;
+package com.lb.regev.talk2me;
 
 import java.io.Serializable;
-import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.Vector;
 
 /**
