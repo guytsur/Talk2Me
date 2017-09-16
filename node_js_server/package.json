@@ -52,5 +52,4 @@
     "node": ">=4.3.2"
   },
   "main": "app.js",
-  "keywords": []
 }
