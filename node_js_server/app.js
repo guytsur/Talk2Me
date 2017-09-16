@@ -11,6 +11,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//----------------key file-------------
+var firebase_key = {
+  "type": "service_account",
+  "project_id": "talk2me-176916",
+  "private_key_id": "7ba994d5720a35f6f63df4f18f2b19672f0a2cbc",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDo4B5w+yOXSYue\nTBxa+DsubHKgfPFJB5VBJ9JeGvvOnt06s495zzNbIEHHHylgfvXV34N20wPT0N+a\nPZfs/BAIYFBpG09l6EZlJqOrdU/56j03LDkxy0L/E2u+qM0SN8f868V+6xx7LyVf\nPSawzzBjjTRgqUigdj8DG3YMsAfstpEdYdKPzteWA9QYob/81Ndn+GSB+xpJoHrB\noSzeOV8oMlgku16tCtetOsFLpIIxZpe+yfrTeE7wpg0JevhqtnpocBsRvT7c6G4U\n5SG8ibROmtZZkdcezjQvsMNbL95W+eVQBk2sYenAqlWe4jkJ9En+4GCK0zAjTg/Q\nq5zVq6PVAgMBAAECggEAMbOVo6jh/3m9n+8gFSVKIj4Yl9qat6qz5vhMDHQnXoGm\n906X9lgr3ozLpScoMlVefANMgFmIhVZcxsNTD8v7UwJVXx1qTHZuwctlnqQ2ycC9\nyG76lP9MAPtA4WwO+o6nsvoSCGS/CyZ0jDdVsOJDclfSgDfZDZA3Ih9kClCunE0x\neF7lYwxo3DGeJUZZx/QArq5e+vgQiCbmWwbf9gYQx9p4gha0lwiLvPv4DgRH0ohv\nxEKB7cNHckuC7vU9kvMQ37I+Bivk64AQq1Bwy8xPQ/5cxPh6KMv0JuNnPA+R5ZyO\ndahDvVVt63cEMho+d92EWJPgA43TLulfFP6yrSj6qQKBgQD6yEposmVxAmsKpk88\nsjBi9xr0zv4c4vVCN2nvuDrb069qlQ07SVnUFYV7pyIUYEpfAB7vPcELPuX2U4jC\nWvQiFQAKy1V3KhQEE0V7fJ2zGUfCzi9vxVGy8JvhErJxSTbrch4KwkiTHNfCnUu2\nKFpQ1gl8EzAVpyPEJ4J0ViAp/QKBgQDtuHP1msbGy3vKKrpguyoycGpkzGekc7vA\nmeWOOH4qo2UJw55Us2jaF2ZoB0pbpV84oHbVkc30n0LZuSHULUvw5PU2xWXhKLq5\nPVQdC8yiHgcfCEL4uGoGZQH3Vg0PLXGjkl6GLIUSHiSjobnJrW0cOtAZwF6BoNsd\nb5zq6c48uQKBgFb6ZKRPS1OYrRtydwTsIFASuCy0JfpK1Rl0Mq/Ly842ax6iN4aa\neCdQl409eFps0x6D4jbDylJmLEf0zPfrp8SyV+NmhmvgEjUfofekTuWxHOx5qoYv\nf5h6TvYPEAiuhfe/CqBcpeMwG70J5Rp2gGyM75ky5nh8EbGUqnBC9sDZAoGBAJMj\n6bqrC8B+sOeo3OYE05CW3nP3xWsYK62CVIFcXFOeAWsyxuzcg9kCROO9J3xkdvUA\n9a0p65Yvgdxr6BGB3BCGV3WIZ5AferwvxsGXzRjHh1bg8TssQowktzvV6o1rbnx1\nm8ZnBhL5z2ntL6cyjme7y5U06gpIe3fT3wfUolAZAoGAJF45vRRuoDWdfdJriKWX\nCekjWjlYQQbTmMf1exY/bMs2URLz8pb8WJE0jKUMwif7d/lllvnA7PpHLvH4D4Uo\nfiRk0n07RF10Tyw8Suasg5YrwZEVU1YrxdBY5C/nJERZWOqapk2G3K5cRQEmLYeH\nQqqFdyfva77SD0XiR2WDaKk=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-umkdb@talk2me-176916.iam.gserviceaccount.com",
+  "client_id": "103469609938816120898",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-umkdb%40talk2me-176916.iam.gserviceaccount.com"}
+
+
+
 
 const util = require('util')
 
@@ -29,7 +44,9 @@ var firebase = require("firebase-admin");
 var request = require('request');
 const app = express();
 
-var serviceAccount = require("/home/guytsur7/src/talk2me-176916/firebase_private_key.json")
+
+//var serviceAccount = require("firebase_private_key.json")
+var serviceAccount = firebase_key
 //Firebase Cloud Messaging Server API key
 var API_KEY = "AAAA1R1mny0:APA91bFtlF6Mzm4zE9OaM7hl2xjq0EJRd7n_DalscWeF8RK3dNX7bFWZD3KxYrbsROX-CH-RCLMnhnkIonHtsDRamkobu15fdeh0EjiF4XJtqJ7VJ6WfZtTQxx01FKko2N-PQH-Az9jO"
 
@@ -132,8 +149,6 @@ var messageHandler = {
     },
     
 'lock_request': function handleRequestLock(message){
-	    var sleep = require('sleep');
-        sleep.sleep(7)
 		sendLockDevice(message.user_id_to_lock)
 		//check that the requester is really in the group
     	//if (message.user_id in groups_dict[message.group_pin]){
