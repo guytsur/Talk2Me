@@ -117,8 +117,6 @@ function handleMessage(message){
 
 var messageHandler = {
 'create_group': function handleCreateGroup(message){
-	var sleep = require('sleep');
-    //sleep.sleep(5)
     addGroupToDict(message,
         sendGroupCreated)
     
@@ -134,6 +132,8 @@ var messageHandler = {
     },
     
 'lock_request': function handleRequestLock(message){
+	    var sleep = require('sleep');
+        sleep.sleep(7)
 		sendLockDevice(message.user_id_to_lock)
 		//check that the requester is really in the group
     	//if (message.user_id in groups_dict[message.group_pin]){
@@ -175,7 +175,7 @@ var messageHandler = {
         		}
         		else {
                 	members.push(message.user_id)
-                	sendGroupFound(message.user_id, groups_dict[message.group_pin])
+
                 	members.forEach(function(member){
                     	if (message.user_id != member){
                         	sendNewGroupMember(message.user_id, member, message.group_pin)
@@ -183,6 +183,7 @@ var messageHandler = {
                     	})
                 	}
     	    }
+    	    sendGroupFound(message.user_id, groups_dict[message.group_pin])
 	    }
 
     },
@@ -320,6 +321,7 @@ function sendGroupFound(user_id, group){
 	var message = { 
         data: {  
 			ttm_message_type: 'group_found',
+			group_pin: group.group_pin,
             group_name: group.group_name,
             group_members: group.members,
             members_pictures:pics,
@@ -354,8 +356,7 @@ if (module === require.main) {
   // Start the server
   const server = app.listen(process.env.PORT || 8081, () => {
     const port = server.address().port;
-    console.log(`App listening on port ${port}`);
-    console.log("shit got serious");
+    console.log("Talk2Me server Active");
   });
   // [END server]
 }
