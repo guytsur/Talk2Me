@@ -1,0 +1,56 @@
+{
+  "name": "Talk2Me-server",
+  "version": "1.0.0",
+  "description": "Talk2Me app server",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guytsur/Talk2Me.git"
+  },
+  "private": true,
+  "scripts": {
+    "start": "node app.js",
+  },
+  "author": "Talk2Me Team,",
+  "contributors": [
+    "Gut Tsur<guytsur7@google.com>"
+  ],
+  "cloud-repo-tools": {
+    "requiresKeyFile": true,
+    "requiresProjectId": true,
+    "test": {
+      "app": {
+        "args": [
+          "app.js"
+        ],
+        "msg": "Tal2Me: Hello, world!"
+      }
+    }
+  },
+  "license": "Apache-2.0",
+  "semistandard": {
+    "globals": [
+      "after",
+      "afterEach",
+      "before",
+      "beforeEach",
+      "describe",
+      "it"
+    ]
+  },
+  "dependencies": {
+    "express": "~4.15.2",
+    "request": "^2.81.0",
+    "firebase": "^2.4.2"
+  },
+  "devDependencies": {
+    "@google-cloud/nodejs-repo-tools": "1.4.16",
+    "ava": "~0.21.0",
+    "supertest": "~3.0.0",
+    "tap-dot": "~1.0.5"
+  },
+  "engines": {
+    "node": ">=4.3.2"
+  },
+  "main": "app.js",
+  "keywords": []
+}
